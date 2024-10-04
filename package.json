@@ -1,0 +1,27 @@
+{
+  "name": "example-with-unocss",
+  "type": "module",
+  "scripts": {
+    "dev": "vinxi dev",
+    "build": "vinxi build",
+    "start": "vinxi start"
+  },
+  "dependencies": {
+    "@kobalte/core": "^0.13.6",
+    "@solidjs/router": "^0.14.7",
+    "@solidjs/start": "^1.0.8",
+    "@unocss/reset": "^0.59.2",
+    "solid-js": "^1.9.1",
+    "tailwind-merge": "^2.5.3",
+    "unocss": "^0.59.2",
+    "vinxi": "^0.4.3"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@unocss/preset-icons": "^0.63.2",
+    "@unocss/transformer-variant-group": "^0.63.2",
+    "unocss-preset-primitives": "0.0.2-beta.1"
+  }
+}
