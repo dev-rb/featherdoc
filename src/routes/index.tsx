@@ -1,28 +1,50 @@
+import { A } from '@solidjs/router';
+
 export default function Home() {
   return (
     <div class="bg-gray-900 w-screen h-screen">
       <div class="w-full h-full grid grid-cols-[auto_1fr] grid-rows-1">
-        <aside class="p-8 h-full border-r-2 border-r-gray-800">
+        <aside class="py-8 px-4 h-full border-r-2 border-r-gray-800">
           <ul class="w-full h-full flex flex-col items-center gap-6">
             <li>
-              <button class="flex items-center justify-center p-2 rounded-lg text-slate-400 hover:(bg-gray-800 text-gray-200)">
+              <A
+                class="flex items-center justify-center p-2 rounded-lg text-slate-400"
+                href="/"
+                activeClass="bg-gray-700 text-white"
+                inactiveClass="hover:(bg-gray-800 text-gray-200)"
+              >
                 <i class="i-lucide-home text-2xl" />
-              </button>
+              </A>
             </li>
             <li>
-              <button class="flex items-center justify-center p-2 rounded-lg text-slate-400 hover:(bg-gray-800 text-gray-200)">
+              <A
+                class="flex items-center justify-center p-2 rounded-lg text-slate-400"
+                href="/notebook"
+                activeClass="bg-gray-700 text-white"
+                inactiveClass="hover:(bg-gray-800 text-gray-200)"
+              >
                 <i class="i-lucide-notebook text-2xl" />
-              </button>
+              </A>
             </li>
             <li>
-              <button class="flex items-center justify-center p-2 rounded-lg text-slate-400 hover:(bg-gray-800 text-gray-200)">
+              <A
+                class="flex items-center justify-center p-2 rounded-lg text-slate-400"
+                href="/threads"
+                activeClass="bg-gray-700 text-white"
+                inactiveClass="hover:(bg-gray-800 text-gray-200)"
+              >
                 <i class="i-lucide-message-square text-2xl" />
-              </button>
+              </A>
             </li>
             <li class="mt-auto">
-              <button class="flex items-center justify-center p-2 rounded-lg text-slate-400 hover:(bg-gray-800 text-gray-200)">
+              <A
+                class="flex items-center justify-center p-2 rounded-lg text-slate-400"
+                href="/settings"
+                activeClass="bg-gray-700 text-white"
+                inactiveClass="hover:(bg-gray-800 text-gray-200)"
+              >
                 <i class="i-lucide-settings text-2xl" />
-              </button>
+              </A>
             </li>
           </ul>
         </aside>
