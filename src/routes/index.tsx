@@ -1,44 +1,29 @@
-import { A } from "@solidjs/router";
-import Counter from "~/components/Counter";
-
 export default function Home() {
   return (
-    <main class="text-center mx-auto text-gray-700 p-4">
-      <h1 class="max-6-xs text-6xl text-sky-700 font-thin uppercase my-16">
-        <div class="flex justify-center items-center">
-          <span class="mr-5">Hello</span> <img class="w-12 h-12" src="https://unocss.dev/logo.svg" alt="UnoCSS logo" />!
-        </div>
-      </h1>
-      <Counter />
-      <p class="mt-8">
-        Visit{" "}
-        <a
-          href="https://solidjs.com"
-          target="_blank"
-          class="text-sky-600 hover:underline"
-        >
-          solidjs.com
-        </a>{" "}
-        to learn how to build Solid apps.
-      </p>
-      <p class="mt-2">
-        Visit{" "}
-        <a
-          href="https://unocss.dev"
-          target="_blank"
-          class="text-sky-600 hover:underline"
-        >
-          unocss.dev
-        </a>{" "}
-        to learn how to style your app.
-      </p>
-      <p class="my-4">
-        <span>Home</span>
-        {" - "}
-        <A href="/about" class="text-sky-600 hover:underline">
-          About Page
-        </A>{" "}
-      </p>
-    </main>
+    <div class="bg-gray-900 w-screen h-screen">
+      <div class="w-full h-full grid grid-cols-[auto_1fr] grid-rows-1">
+        <aside class="p-8 h-full border-r-2 border-r-gray-800">
+          <ul class="w-full flex flex-col gap-6">
+            <li class="flex items-center justify-center p-2 rounded-lg text-slate-400 hover:(bg-gray-800 text-gray-200)">
+              <button class="i-lucide-home text-2xl" />
+            </li>
+            <li class="flex items-center justify-center p-2 rounded-lg text-slate-400 hover:(bg-gray-800 text-gray-200)">
+              <button class="i-lucide-notebook text-2xl" />
+            </li>
+            <li class="flex items-center justify-center p-2 rounded-lg text-slate-400 hover:(bg-gray-800 text-gray-200)">
+              <button class="i-lucide-message-square text-2xl" />
+            </li>
+          </ul>
+        </aside>
+        <main class="w-full h-full grid grid-cols-[auto_2fr_1fr]">
+          <aside class="bg-gray-700 min-w-md"></aside>
+          <article class="bg-gray-600"></article>
+          <div class="bg-gray-400 grid grid-cols-1 grid-rows-2 w-full h-full">
+            <div class="bg-gray-800" />
+            <div class="bg-slate-900" />
+          </div>
+        </main>
+      </div>
+    </div>
   );
 }
