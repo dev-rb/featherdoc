@@ -1,6 +1,14 @@
 import { A } from '@solidjs/router';
 import { VoidComponent } from 'solid-js';
-import { Button } from '~/components/ui/Button';
+import { Button } from '../ui/Button';
+
+export const SideNav = () => {
+  return (
+    <aside class="py-8 px-4 h-full border-r-2 border-r-border bg-background">
+      <Navigation />
+    </aside>
+  );
+};
 
 interface NavLinkProps {
   href: string;
@@ -49,23 +57,3 @@ const Navigation = () => {
     </nav>
   );
 };
-
-export default function Home() {
-  return (
-    <div class="bg-background w-screen h-screen">
-      <div class="w-full h-full grid grid-cols-[auto_1fr] grid-rows-1">
-        <aside class="py-8 px-4 h-full border-r-2 border-r-border bg-background">
-          <Navigation />
-        </aside>
-        <main class="w-full h-full grid grid-cols-[auto_2fr_1fr]">
-          <aside class="bg-muted min-w-md"></aside>
-          <article class="bg-muted border-x-2 border-x-border"></article>
-          <div class="grid grid-cols-1 grid-rows-2 w-full h-full">
-            <div class="bg-background" />
-            <div class="bg-background" />
-          </div>
-        </main>
-      </div>
-    </div>
-  );
-}
