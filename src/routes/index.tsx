@@ -44,12 +44,12 @@ export default function Home() {
   return (
     <div class="bg-gray-900 w-screen h-screen">
       <div class="w-full h-full grid grid-cols-[auto_1fr] grid-rows-1">
-        <aside class="py-8 px-4 h-full border-r-2 border-r-gray-800">
+        <aside class="py-8 px-4 h-full border-r-2 border-r-gray-800 bg-gray-900">
           <Navigation />
         </aside>
         <main class="w-full h-full grid grid-cols-[auto_2fr_1fr]">
-          <aside class="bg-gray-700 min-w-md"></aside>
-          <article class="bg-gray-600"></article>
+          <aside class="bg-gray-800 min-w-md"></aside>
+          <article class="bg-gray-800 border-x-2 border-x-gray-700"></article>
           <div class="bg-gray-400 grid grid-cols-1 grid-rows-2 w-full h-full">
             <div class="bg-gray-800" />
             <div class="bg-slate-900" />
