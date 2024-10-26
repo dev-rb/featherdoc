@@ -1,6 +1,7 @@
 import { A } from '@solidjs/router';
 import { VoidComponent } from 'solid-js';
 import { Button } from '../ui/Button';
+import { ThemeToggle } from './theme-toggle';
 
 export const SideNav = () => {
   return (
@@ -22,7 +23,7 @@ const NavLink: VoidComponent<NavLinkProps> = (props) => {
       variant="ghost"
       size="icon"
       href={props.href}
-      activeClass="bg-primary text-white hover:(bg-primary text-primary-foreground)"
+      activeClass="bg-primary text-white dark:text-primary-foreground hover:(bg-primary text-primary-foreground)"
       inactiveClass="text-primary/50"
       end
     >
@@ -46,9 +47,7 @@ const Navigation = () => {
         </li>
         <ul class="mt-auto">
           <li>
-            <Button variant="ghost" size="icon" class="text-2xl">
-              <i class="i-lucide-sun dark:i-lucide-moon" />
-            </Button>
+            <ThemeToggle />
           </li>
           <li>
             <NavLink href="/settings" iconClass="i-lucide-settings" />

@@ -93,6 +93,15 @@ export default defineConfig({
       };
     },
   ],
-  presets: [presetUno(), presetIcons({}), presetKobalte({})],
+  presets: [
+    presetUno({
+      dark: {
+        dark: '[data-theme="dark"]',
+        light: '[data-theme="light"]',
+      },
+    }),
+    presetIcons({}),
+    presetKobalte({}),
+  ],
   transformers: [transformVariantGroup()],
 });
