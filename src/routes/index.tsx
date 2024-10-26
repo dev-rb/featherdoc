@@ -3,7 +3,7 @@ export default function Home() {
     <div class="bg-gray-900 w-screen h-screen">
       <div class="w-full h-full grid grid-cols-[auto_1fr] grid-rows-1">
         <aside class="p-8 h-full border-r-2 border-r-gray-800">
-          <ul class="w-full flex flex-col gap-6">
+          <ul class="w-full h-full flex flex-col items-center gap-6">
             <li class="flex items-center justify-center p-2 rounded-lg text-slate-400 hover:(bg-gray-800 text-gray-200)">
               <button class="i-lucide-home text-2xl" />
             </li>
@@ -12,6 +12,9 @@ export default function Home() {
             </li>
             <li class="flex items-center justify-center p-2 rounded-lg text-slate-400 hover:(bg-gray-800 text-gray-200)">
               <button class="i-lucide-message-square text-2xl" />
+            </li>
+            <li class="mt-auto flex items-center justify-center p-2 rounded-lg text-slate-400 hover:(bg-gray-800 text-gray-200)">
+              <button class="i-lucide-settings text-2xl" />
             </li>
           </ul>
         </aside>
