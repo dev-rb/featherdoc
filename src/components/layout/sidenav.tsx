@@ -24,6 +24,7 @@ const NavLink: VoidComponent<NavLinkProps> = (props) => {
       href={props.href}
       activeClass="bg-primary text-white hover:(bg-primary text-primary-foreground)"
       inactiveClass="text-primary/50"
+      end
     >
       <i class={`${props.iconClass} text-2xl`} />
     </Button>
