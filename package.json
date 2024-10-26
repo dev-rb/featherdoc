@@ -1,5 +1,6 @@
 {
   "name": "support-world",
+  "author": "dev-rb",
   "type": "module",
   "scripts": {
     "dev": "vinxi dev",
