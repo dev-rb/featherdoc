@@ -9,14 +9,16 @@ interface NavLinkProps {
 
 const NavLink: VoidComponent<NavLinkProps> = (props) => {
   return (
-    <A
-      class="flex items-center justify-center p-2 rounded-lg text-slate-400"
+    <Button
+      as={A}
+      variant="ghost"
+      size="icon"
       href={props.href}
-      activeClass="bg-gray-700 text-white"
-      inactiveClass="hover:(bg-gray-800 text-gray-200)"
+      activeClass="bg-primary text-white hover:(bg-primary text-primary-foreground)"
+      inactiveClass="text-primary/50"
     >
       <i class={`${props.iconClass} text-2xl`} />
-    </A>
+    </Button>
   );
 };
 
@@ -33,9 +35,16 @@ const Navigation = () => {
         <li>
           <NavLink href="/threads" iconClass="i-lucide-message-square" />
         </li>
-        <li class="mt-auto">
-          <NavLink href="/settings" iconClass="i-lucide-settings" />
-        </li>
+        <ul class="mt-auto">
+          <li>
+            <Button variant="ghost" size="icon" class="text-2xl">
+              <i class="i-lucide-sun dark:i-lucide-moon" />
+            </Button>
+          </li>
+          <li>
+            <NavLink href="/settings" iconClass="i-lucide-settings" />
+          </li>
+        </ul>
       </ul>
     </nav>
   );
@@ -43,18 +52,17 @@ const Navigation = () => {
 
 export default function Home() {
   return (
-    <div class="bg-gray-900 w-screen h-screen">
+    <div class="bg-background w-screen h-screen">
       <div class="w-full h-full grid grid-cols-[auto_1fr] grid-rows-1">
-        <aside class="py-8 px-4 h-full border-r-2 border-r-gray-800 bg-gray-900">
-          <Button>Hello</Button>
+        <aside class="py-8 px-4 h-full border-r-2 border-r-border bg-background">
           <Navigation />
         </aside>
         <main class="w-full h-full grid grid-cols-[auto_2fr_1fr]">
-          <aside class="bg-gray-800 min-w-md"></aside>
-          <article class="bg-gray-800 border-x-2 border-x-gray-700"></article>
-          <div class="bg-gray-400 grid grid-cols-1 grid-rows-2 w-full h-full">
-            <div class="bg-gray-800" />
-            <div class="bg-slate-900" />
+          <aside class="bg-muted min-w-md"></aside>
+          <article class="bg-muted border-x-2 border-x-border"></article>
+          <div class="grid grid-cols-1 grid-rows-2 w-full h-full">
+            <div class="bg-background" />
+            <div class="bg-background" />
           </div>
         </main>
       </div>
