@@ -45,7 +45,7 @@ const Navigation = () => {
         <li>
           <NavLink href="/threads" iconClass="i-lucide-message-square" />
         </li>
-        <ul class="mt-auto">
+        <ul class="mt-auto flex flex-col gap-6">
           <li>
             <ThemeToggle />
           </li>

@@ -1,19 +1,19 @@
 import { getAppTheme, setAppTheme } from '~/lib/theme';
-import { Button } from '../ui/Button';
+import { ToggleButton } from '../ui/ToggleButton';
+import { cn } from '~/lib/utils';
 
 export const ThemeToggle = () => {
   return (
-    <Button
-      variant="ghost"
+    <ToggleButton
       size="icon"
-      class="text-2xl"
-      onClick={() => {
+      class="text-2xl hover:bg-secondary"
+      onChange={() => {
         const current = getAppTheme();
 
         setAppTheme(current === 'dark' ? 'light' : 'dark');
       }}
     >
-      <i class="i-lucide-sun dark:(i-lucide-moon text-white)" />
-    </Button>
+      {(state) => <i class={cn('dark:(text-white)', state.pressed() ? 'i-lucide-sun' : 'i-lucide-moon')} />}
+    </ToggleButton>
   );
 };
