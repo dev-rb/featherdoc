@@ -1,5 +1,6 @@
 import { A } from '@solidjs/router';
 import { VoidComponent } from 'solid-js';
+import { Button } from '~/components/ui/Button';
 
 interface NavLinkProps {
   href: string;
@@ -45,6 +46,7 @@ export default function Home() {
     <div class="bg-gray-900 w-screen h-screen">
       <div class="w-full h-full grid grid-cols-[auto_1fr] grid-rows-1">
         <aside class="py-8 px-4 h-full border-r-2 border-r-gray-800 bg-gray-900">
+          <Button>Hello</Button>
           <Navigation />
         </aside>
         <main class="w-full h-full grid grid-cols-[auto_2fr_1fr]">
