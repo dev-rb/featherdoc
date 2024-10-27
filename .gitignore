@@ -6,6 +6,8 @@ dist
 .netlify
 .vinxi
 app.config.timestamp_*.js
+pocketbase
+pocketbase-bin
 
 # Environment
 .env
