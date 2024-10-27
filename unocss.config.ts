@@ -100,7 +100,11 @@ export default defineConfig({
         light: '[data-theme="light"]',
       },
     }),
-    presetIcons({}),
+    presetIcons({
+      collections: {
+        lucide: () => import('@iconify-json/lucide/icons.json').then((i) => i.default),
+      },
+    }),
     presetKobalte({}),
   ],
   transformers: [transformVariantGroup()],

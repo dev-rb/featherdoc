@@ -20,7 +20,6 @@ const getServerCookieTheme = (): AppTheme => {
 
   const theme = getCookie('theme');
 
-  console.log('App theme', theme);
   return (theme || 'light') as AppTheme;
 };
 
