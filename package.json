@@ -25,6 +25,8 @@
     "node": ">=18"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.1.0",
+    "@eslint/js": "^9.13.0",
     "@unocss/eslint-config": "^0.63.6",
     "@unocss/preset-icons": "^0.63.2",
     "@unocss/transformer-variant-group": "^0.63.2",
