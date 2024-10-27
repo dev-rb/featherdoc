@@ -5,7 +5,7 @@ import { ThemeToggle } from './theme-toggle';
 
 export const SideNav = () => {
   return (
-    <aside class="py-8 px-4 h-full border-r-2 border-r-border bg-background">
+    <aside class="py-8 px-4 h-full bg-background">
       <Navigation />
     </aside>
   );
@@ -14,6 +14,7 @@ export const SideNav = () => {
 interface NavLinkProps {
   href: string;
   iconClass: string;
+  end?: boolean;
 }
 
 const NavLink: VoidComponent<NavLinkProps> = (props) => {
@@ -25,7 +26,7 @@ const NavLink: VoidComponent<NavLinkProps> = (props) => {
       href={props.href}
       activeClass="bg-primary text-white dark:text-primary-foreground hover:(bg-primary text-primary-foreground)"
       inactiveClass="text-primary/50"
-      end
+      end={props.end ?? true}
     >
       <i class={`${props.iconClass} text-2xl`} />
     </Button>
@@ -43,7 +44,7 @@ const Navigation = () => {
           <NavLink href="/notebook" iconClass="i-lucide-notebook" />
         </li>
         <li>
-          <NavLink href="/threads" iconClass="i-lucide-message-square" />
+          <NavLink href="/threads" iconClass="i-lucide-message-square" end={false} />
         </li>
         <ul class="mt-auto flex flex-col gap-6">
           <li>
