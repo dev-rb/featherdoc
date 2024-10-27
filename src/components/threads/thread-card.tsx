@@ -3,6 +3,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/Card
 import { VoidComponent } from 'solid-js';
 
 interface ThreadCardProps {
+  id: number;
   title: string;
   description: string;
   author: string;
@@ -13,7 +14,7 @@ interface ThreadCardProps {
 
 export const ThreadCard: VoidComponent<ThreadCardProps> = (props) => {
   return (
-    <Card as={A} class="select-none bg-muted-foreground/20 border-0" href={`/threads/${1}`}>
+    <Card as={A} class="select-none bg-muted-foreground/20 border-0" href={`/threads/${props.id}`}>
       <CardHeader>
         <div class="w-full flex items-center justify-between">
           <span class="text-xs text-white px-2 py-1 bg-blue-600/50 rounded-full">{props.author}</span>

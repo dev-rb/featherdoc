@@ -10,6 +10,7 @@ export default function Threads() {
       <aside class="bg-muted max-w-md overflow-hidden pt-4">
         <div class="w-full h-full custom-v-scrollbar pb-4 px-2 flex flex-col gap-2 overflow-auto">
           <ThreadCard
+            id={1}
             title="function Component vs arrow function name preference with a really long title just for testing purposes"
             author="dev-rb"
             description="What function form should you use for components? I know it's all preference but I'd like to know what the standard is or what other people prefer and why."
@@ -17,30 +18,35 @@ export default function Threads() {
           />
 
           <ThreadCard
+            id={2}
             title="function Component vs arrow function name preference with a really long title just for testing purposes"
             author="dev-rb"
             description="What function form should you use for components? I know it's all preference but I'd like to know what the standard is or what other people prefer and why."
             totalReplies={5}
           />
           <ThreadCard
+            id={3}
             title="function Component vs arrow function name preference with a really long title just for testing purposes"
             author="dev-rb"
             description="What function form should you use for components? I know it's all preference but I'd like to know what the standard is or what other people prefer and why."
             totalReplies={5}
           />
           <ThreadCard
+            id={4}
             title="function Component vs arrow function name preference with a really long title just for testing purposes"
             author="dev-rb"
             description="What function form should you use for components? I know it's all preference but I'd like to know what the standard is or what other people prefer and why."
             totalReplies={5}
           />
           <ThreadCard
+            id={5}
             title="function Component vs arrow function name preference with a really long title just for testing purposes"
             author="dev-rb"
             description="What function form should you use for components? I know it's all preference but I'd like to know what the standard is or what other people prefer and why."
             totalReplies={5}
           />
           <ThreadCard
+            id={6}
             title="function Component vs arrow function name preference with a really long title just for testing purposes"
             author="dev-rb"
             description="What function form should you use for components? I know it's all preference but I'd like to know what the standard is or what other people prefer and why."
