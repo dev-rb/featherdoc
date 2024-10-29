@@ -6,6 +6,14 @@ import { Router } from '@solidjs/router';
 import { FileRoutes } from '@solidjs/start/router';
 import { Suspense } from 'solid-js';
 
+declare module 'solid-js' {
+  namespace JSX {
+    interface Directives {
+      form: boolean;
+    }
+  }
+}
+
 export default function App() {
   return (
     <Router

@@ -8,6 +8,8 @@
     "start": "vinxi start"
   },
   "dependencies": {
+    "@felte/common": "^1.1.8",
+    "@felte/solid": "^1.2.13",
     "@iconify-json/lucide": "^1.2.10",
     "@iconify-json/svg-spinners": "^1.2.1",
     "@kobalte/core": "^0.13.6",
@@ -20,6 +22,7 @@
     "solid-js": "^1.9.3",
     "tailwind-merge": "^2.5.3",
     "unocss": "^0.59.2",
+    "valibot": "^0.42.1",
     "vinxi": "^0.4.3"
   },
   "engines": {
