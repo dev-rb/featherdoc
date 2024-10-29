@@ -1,18 +1,19 @@
 import type { Obj, AssignableErrors, ValidationFunction, ExtenderHandler, CurrentForm, Extender } from '@felte/common';
 import { _update } from '@felte/common';
-import { type ValiError, type BaseSchema, parseAsync } from 'valibot';
+import { type ValiError, type GenericSchema, parseAsync } from 'valibot';
 
 export type ValidatorConfig = {
-  schema: BaseSchema<any, any, any>;
+  schema: GenericSchema<any, any, any>;
   level?: 'error' | 'warning';
 };
 
-export function validateSchema<Data extends Obj>(schema: BaseSchema<any, any, any>): ValidationFunction<Data> {
-  function shapeErrors(errors: ValiError<BaseSchema<any, any, any>>): AssignableErrors<Data> {
+export function validateSchema<Data extends Obj>(schema: GenericSchema<any, any, any>): ValidationFunction<Data> {
+  function shapeErrors(errors: ValiError<GenericSchema<any, any, any>>): AssignableErrors<Data> {
     return errors.issues.reduce((err, value) => {
       /* istanbul ignore next */
       if (!value.path) return err;
-      return _update(err, value.path.join('.'), (currentValue: undefined | string[]) => {
+      // @ts-expect-error I don't know how to type this :)
+      return _update(err, value.path.map((p) => p.key).join('.'), (currentValue: undefined | string[]) => {
         if (!currentValue || !Array.isArray(currentValue)) return [value.message];
         return [...currentValue, value.message];
       });
