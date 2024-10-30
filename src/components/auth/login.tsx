@@ -2,38 +2,40 @@ import { createForm } from '@felte/solid';
 import { Button } from '../ui/Button';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../ui/Dialog';
 import { TextField, TextFieldErrorMessage, TextFieldInput, TextFieldLabel } from '../ui/TextField';
-import { action, useAction } from '@solidjs/router';
 import * as v from 'valibot';
 import { validator } from '~/lib/felte';
 import { createEffect } from 'solid-js';
+import { pb } from '~/lib/pocketbase';
 
 const LoginSchema = v.object({
-  email: v.pipe(v.string(), v.nonEmpty('Please enter your email'), v.email('Enter a valid email')),
-  password: v.pipe(
-    v.string(),
-
-    v.minLength(1, 'Password must be at least 1 charachter')
-  ),
+  email: v.pipe(v.string('Email is required'), v.email('Enter a valid email')),
+  password: v.pipe(v.string('Password is required'), v.minLength(1, 'Password must be at least 1 character.')),
 });
 
-const loginAction = action(async (form: FormData) => {
-  console.log('Login action', [...form.entries()]);
-});
+type LoginData = v.InferInput<typeof LoginSchema>;
+
+const login = async (data: LoginData) => {
+  try {
+    const response = await pb.collection('users').authWithPassword(data.email, data.password);
+    console.log('Login', response);
+  } catch (err) {
+    throw err;
+  }
+};
 
 export const LoginForm = () => {
-  const login = useAction(loginAction);
-
-  const { form, errors } = createForm({
+  const { form, errors, setErrors } = createForm({
     initialValues: {
       email: '',
       password: '',
     },
     extend: validator({ schema: LoginSchema }),
     onError() {
-      console.log(errors);
+      setErrors('email', 'Email or password was incorrect');
+      setErrors('password', 'Email or password was incorrect');
     },
-    onSubmit(values) {
-      console.log('Submit', values);
+    async onSubmit(values) {
+      await login(values);
     },
   });
   form;
@@ -48,18 +50,19 @@ export const LoginForm = () => {
         <DialogHeader>
           <DialogTitle class="text-center">Login</DialogTitle>
         </DialogHeader>
-        <form use:form class="grid grid-cols-1 grid-rows-2 gap-8 px-8" action={loginAction} method="post">
-          <TextField required>
+        <form use:form class="grid grid-cols-1 grid-rows-2 gap-8 px-8">
+          <TextField required validationState={errors('email')?.length ? 'invalid' : 'valid'}>
             <TextFieldLabel class="flex flex-col gap-2 text-white">
               Email
               <TextFieldInput type="email" name="email" />
+              <TextFieldErrorMessage>{errors('email')?.join(' ')}</TextFieldErrorMessage>
             </TextFieldLabel>
           </TextField>
-          <TextField validationState={errors('password')?.length ? 'invalid' : 'valid'}>
+          <TextField required validationState={errors('password')?.length ? 'invalid' : 'valid'}>
             <TextFieldLabel class="flex flex-col gap-2 text-white">
               Password
               <TextFieldInput type="password" name="password" />
-              <TextFieldErrorMessage>{errors('password')}</TextFieldErrorMessage>
+              <TextFieldErrorMessage>{errors('password')?.join(' ')}</TextFieldErrorMessage>
             </TextFieldLabel>
           </TextField>
           <DialogFooter>
