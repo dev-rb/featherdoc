@@ -1,10 +1,7 @@
 import { createForm } from '@felte/solid';
-import { Button } from '../ui/Button';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../ui/Dialog';
 import { TextField, TextFieldErrorMessage, TextFieldInput, TextFieldLabel } from '../ui/TextField';
 import * as v from 'valibot';
 import { validator } from '~/lib/felte';
-import { createEffect } from 'solid-js';
 import { pb } from '~/lib/pocketbase';
 
 const LoginSchema = v.object({
@@ -40,36 +37,22 @@ export const LoginForm = () => {
   });
   form;
 
-  createEffect(() => {
-    console.log(errors());
-  });
-
   return (
-    <Dialog open={true}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle class="text-center">Login</DialogTitle>
-        </DialogHeader>
-        <form use:form class="grid grid-cols-1 grid-rows-2 gap-8 px-8">
-          <TextField required validationState={errors('email')?.length ? 'invalid' : 'valid'}>
-            <TextFieldLabel class="flex flex-col gap-2 text-white">
-              Email
-              <TextFieldInput type="email" name="email" />
-              <TextFieldErrorMessage>{errors('email')?.join(' ')}</TextFieldErrorMessage>
-            </TextFieldLabel>
-          </TextField>
-          <TextField required validationState={errors('password')?.length ? 'invalid' : 'valid'}>
-            <TextFieldLabel class="flex flex-col gap-2 text-white">
-              Password
-              <TextFieldInput type="password" name="password" />
-              <TextFieldErrorMessage>{errors('password')?.join(' ')}</TextFieldErrorMessage>
-            </TextFieldLabel>
-          </TextField>
-          <DialogFooter>
-            <Button type="submit">Login</Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <form use:form class="grid grid-cols-1 grid-rows-2 gap-8 py-4 px-8">
+      <TextField required validationState={errors('email')?.length ? 'invalid' : 'valid'}>
+        <TextFieldLabel class="flex flex-col gap-2 text-white">
+          Email
+          <TextFieldInput type="email" name="email" />
+          <TextFieldErrorMessage>{errors('email')?.join(' ')}</TextFieldErrorMessage>
+        </TextFieldLabel>
+      </TextField>
+      <TextField required validationState={errors('password')?.length ? 'invalid' : 'valid'}>
+        <TextFieldLabel class="flex flex-col gap-2 text-white">
+          Password
+          <TextFieldInput type="password" name="password" />
+          <TextFieldErrorMessage>{errors('password')?.join(' ')}</TextFieldErrorMessage>
+        </TextFieldLabel>
+      </TextField>
+    </form>
   );
 };
