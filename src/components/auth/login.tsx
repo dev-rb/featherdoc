@@ -3,6 +3,7 @@ import { TextField, TextFieldErrorMessage, TextFieldInput, TextFieldLabel } from
 import * as v from 'valibot';
 import { validator } from '~/lib/felte';
 import { pb } from '~/lib/pocketbase';
+import { FlowComponent } from 'solid-js';
 
 const LoginSchema = v.object({
   email: v.pipe(v.string('Email is required'), v.email('Enter a valid email')),
@@ -20,7 +21,7 @@ const login = async (data: LoginData) => {
   }
 };
 
-export const LoginForm = () => {
+export const LoginForm: FlowComponent = (props) => {
   const { form, errors, setErrors } = createForm({
     initialValues: {
       email: '',
@@ -53,6 +54,7 @@ export const LoginForm = () => {
           <TextFieldErrorMessage>{errors('password')?.join(' ')}</TextFieldErrorMessage>
         </TextFieldLabel>
       </TextField>
+      {props.children}
     </form>
   );
 };

@@ -16,20 +16,20 @@ export const AuthModal = () => {
             <DialogHeader>
               <DialogTitle class="text-center">Login</DialogTitle>
             </DialogHeader>
-            <LoginForm />
-
-            <DialogFooter>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  setStep(1);
-                }}
-              >
-                Sign up
-              </Button>
-              <Button type="submit">Login</Button>
-            </DialogFooter>
+            <LoginForm>
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setStep(1);
+                  }}
+                >
+                  Sign up
+                </Button>
+                <Button type="submit">Login</Button>
+              </DialogFooter>
+            </LoginForm>
           </StepperItem>
           <StepperItem>
             <Button
