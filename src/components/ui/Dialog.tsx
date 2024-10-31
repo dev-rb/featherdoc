@@ -53,7 +53,7 @@ const DialogContent = <T extends ValidComponent = 'div'>(props: PolymorphicProps
         {...rest}
       >
         {props.children}
-        <DialogPrimitive.CloseButton class="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[expanded]:bg-accent data-[expanded]:text-muted-foreground">
+        <DialogPrimitive.CloseButton class="flex-center absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[expanded]:bg-accent data-[expanded]:text-muted-foreground">
           <i class="i-lucide-x text-white inline-block text-xl leading-none" />
           <span class="sr-only">Close</span>
         </DialogPrimitive.CloseButton>
