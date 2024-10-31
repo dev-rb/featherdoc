@@ -9,7 +9,7 @@ export const AuthModal = () => {
   const [step, setStep] = createSignal(0);
 
   return (
-    <Dialog open={true}>
+    <Dialog defaultOpen={true}>
       <DialogContent>
         <Stepper step={step()} onStepChange={setStep}>
           <StepperItem>

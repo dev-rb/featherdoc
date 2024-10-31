@@ -1,3 +1,6 @@
+// Taken from: https://github.com/pablo-abc/felte/blob/main/packages/validator-zod/src/index.ts
+//
+// Modified to use with valibot
 import type { Obj, AssignableErrors, ValidationFunction, ExtenderHandler, CurrentForm, Extender } from '@felte/common';
 import { _update } from '@felte/common';
 import { type ValiError, type GenericSchema, parseAsync } from 'valibot';
