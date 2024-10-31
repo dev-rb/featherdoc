@@ -4,6 +4,7 @@ import * as v from 'valibot';
 import { validator } from '~/lib/felte';
 import { pb } from '~/lib/pocketbase';
 import { FlowComponent } from 'solid-js';
+import { createAppSession } from '~/lib/session';
 
 const LoginSchema = v.object({
   email: v.pipe(v.string('Email is required'), v.email('Enter a valid email')),
@@ -15,7 +16,7 @@ type LoginData = v.InferInput<typeof LoginSchema>;
 const login = async (data: LoginData) => {
   try {
     const response = await pb.collection('users').authWithPassword(data.email, data.password);
-    console.log('Login', response);
+    createAppSession({});
   } catch (err) {
     throw err;
   }

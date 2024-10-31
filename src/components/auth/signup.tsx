@@ -5,6 +5,7 @@ import { createForm } from '@felte/solid';
 import { pb } from '~/lib/pocketbase';
 import { FlowComponent } from 'solid-js';
 import { ClientResponseError } from 'pocketbase';
+import { createAppSession } from '~/lib/session';
 
 const SignupSchema = v.pipe(
   v.object({
@@ -43,6 +44,7 @@ const signup = async (data: SignupData) => {
       password: data.password,
       passwordConfirm: data.confirmPassword,
     });
+    createAppSession({});
     console.log('Sign up', response);
   } catch (err) {
     const e = err as ClientResponseError;
