@@ -39,7 +39,7 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       pocketbase:
-        specifier: ^0.21.5
+        specifier: 0.21.5
         version: 0.21.5
       solid-js:
         specifier: ^1.9.3

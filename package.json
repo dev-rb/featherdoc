@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vinxi dev",
     "build": "vinxi build",
-    "start": "vinxi start"
+    "start": "vinxi start",
+    "typegen": "npx pocketbase-typegen --db ./pocketbase_api/pb_data/data.db --out src/types/pocketbase.ts"
   },
   "dependencies": {
     "@felte/common": "^1.1.8",
