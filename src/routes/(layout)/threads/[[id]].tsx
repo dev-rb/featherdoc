@@ -1,57 +1,49 @@
-import { useParams } from '@solidjs/router';
-import { Show } from 'solid-js';
+import { useParams, useSearchParams } from '@solidjs/router';
+import { createMemo, createSignal, For, Show } from 'solid-js';
 import { ThreadCard } from '~/components/threads/thread-card';
+import { TextField, TextFieldInput } from '~/components/ui/TextField';
+import { createQuery } from '~/lib/pocketbase';
 
 export default function Threads() {
   const params = useParams<{ id: string }>();
 
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const currentPage = createMemo(() => {
+    const page = Number(searchParams.page)
+
+    if (Number.isNaN(page) || !Number.isFinite(page) || !Number.isSafeInteger(page)) {
+      return 0
+    }
+
+    return page
+  })
+
+  const threads = createQuery('threads', 'getList', currentPage, () => 50, () => ({
+    expand: 'author'
+  }))
+
   return (
     <main class="w-full h-full grid grid-cols-[auto_1fr_auto] overflow-hidden">
-      <aside class="bg-muted max-w-md overflow-hidden pt-4">
+      <aside class="flex flex-col bg-muted min-w-md max-w-md overflow-hidden pt-4">
+        <div>
+          <TextField class="bg-muted-foreground/50">
+            <TextFieldInput type='search' />
+          </TextField>
+        </div>
         <div class="w-full h-full custom-v-scrollbar pb-4 px-2 flex flex-col gap-2 overflow-auto">
-          <ThreadCard
-            id={1}
-            title="function Component vs arrow function name preference with a really long title just for testing purposes"
-            author="dev-rb"
-            description="What function form should you use for components? I know it's all preference but I'd like to know what the standard is or what other people prefer and why."
-            totalReplies={5}
-          />
-
-          <ThreadCard
-            id={2}
-            title="function Component vs arrow function name preference with a really long title just for testing purposes"
-            author="dev-rb"
-            description="What function form should you use for components? I know it's all preference but I'd like to know what the standard is or what other people prefer and why."
-            totalReplies={5}
-          />
-          <ThreadCard
-            id={3}
-            title="function Component vs arrow function name preference with a really long title just for testing purposes"
-            author="dev-rb"
-            description="What function form should you use for components? I know it's all preference but I'd like to know what the standard is or what other people prefer and why."
-            totalReplies={5}
-          />
-          <ThreadCard
-            id={4}
-            title="function Component vs arrow function name preference with a really long title just for testing purposes"
-            author="dev-rb"
-            description="What function form should you use for components? I know it's all preference but I'd like to know what the standard is or what other people prefer and why."
-            totalReplies={5}
-          />
-          <ThreadCard
-            id={5}
-            title="function Component vs arrow function name preference with a really long title just for testing purposes"
-            author="dev-rb"
-            description="What function form should you use for components? I know it's all preference but I'd like to know what the standard is or what other people prefer and why."
-            totalReplies={5}
-          />
-          <ThreadCard
-            id={6}
-            title="function Component vs arrow function name preference with a really long title just for testing purposes"
-            author="dev-rb"
-            description="What function form should you use for components? I know it's all preference but I'd like to know what the standard is or what other people prefer and why."
-            totalReplies={5}
-          />
+          <For each={threads.data.latest?.items}>
+            {thread => (
+              <ThreadCard
+                id={thread.id}
+                author={thread.author}
+                title={thread.title}
+                resolved={thread.resolved}
+                timestamp={thread.created}
+                totalReplies={0}
+              />
+            )}
+          </For>
         </div>
       </aside>
       <Show
