@@ -3,9 +3,8 @@ import { TextField, TextFieldErrorMessage, TextFieldInput, TextFieldLabel } from
 import * as v from 'valibot';
 import { validator } from '~/lib/felte';
 import { FlowComponent } from 'solid-js';
-import { createAppSession } from '~/lib/session';
 import { TypedPocketBase } from '~/types/pocketbase-gen';
-import { usePocketbase } from '../pocketbase-context';
+import Pocketbase from 'pocketbase';
 
 const LoginSchema = v.object({
   email: v.pipe(v.string('Email is required'), v.email('Enter a valid email')),
@@ -14,19 +13,18 @@ const LoginSchema = v.object({
 
 type LoginData = v.InferInput<typeof LoginSchema>;
 
-const login = async (pb: TypedPocketBase, data: LoginData) => {
+const login = async (data: LoginData) => {
+  'use server'
+  const pb = new Pocketbase('http://127.0.0.1:8090') as TypedPocketBase;
   try {
     await pb.collection('users').authWithPassword(data.email, data.password);
-    console.log("login")
-    const response = await pb.collection('users').authRefresh()
-    createAppSession({ token: response.token });
+    await pb.collection('users').authRefresh()
   } catch (err) {
     throw err;
   }
 };
 
 export const LoginForm: FlowComponent = (props) => {
-  const pb = usePocketbase()
   const { form, errors, setErrors } = createForm({
     initialValues: {
       email: '',
@@ -39,7 +37,7 @@ export const LoginForm: FlowComponent = (props) => {
       setErrors('password', 'Email or password was incorrect');
     },
     async onSubmit(values) {
-      await login(pb, values);
+      await login(values);
     },
   });
   form;

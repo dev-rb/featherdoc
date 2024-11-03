@@ -1,10 +1,8 @@
-import { query, createAsync, action, useAction, reload } from '@solidjs/router';
+import { query, createAsync } from '@solidjs/router';
 import Pocketbase from 'pocketbase';
-import { createContext, createRenderEffect, FlowComponent, onCleanup, onMount, useContext } from "solid-js"
+import { createContext, createRenderEffect, FlowComponent, useContext } from "solid-js";
 import { getRequestEvent } from 'solid-js/web';
-import { setCookie } from 'vinxi/server';
-import { AppSession, getAppSession, updateSession } from '~/lib/session';
-import { TypedPocketBase } from "~/types/pocketbase-gen"
+import { TypedPocketBase } from "~/types/pocketbase-gen";
 
 const PocketbaseContext = createContext<TypedPocketBase>()
 
@@ -18,24 +16,14 @@ export const usePocketbase = () => {
   return pb
 }
 
-const setServerCookie = (name: string, value: string) => {
-  'use server';
-
-  setCookie(name, value);
-};
-
 const cacheSession = query(async () => {
   'use server'
-
   const event = getRequestEvent()
+  const cookie = event?.response.headers.get('Set-Cookie')
 
-  console.log("Cache session", event?.request.headers.get('set-cookie'))
+  event?.locals.pb.authStore.loadFromCookie(cookie || '')
 
-  const session = await getAppSession()
-
-  if (!session || Object.keys(session).length === 0) return
-
-  return session.data
+  return event?.locals.pb.authStore.token
 
 }, 'session')
 
@@ -48,38 +36,13 @@ export const PocketbaseProvider: FlowComponent = (props) => {
 
   createRenderEffect(() => {
 
-    const sessionInfo = sessionData()
+    const token = sessionData()
 
-    if (!sessionInfo || !sessionInfo.token) return
-    console.log("Do set with token data", sessionInfo)
+    if (!token) return
 
-    setServerCookie('Set-Cookie', sessionInfo.token)
-    // pb.authStore.save(sessionInfo.token)
+    pb.authStore.save(token)
 
   })
-
-
-  const updateSessionAction = action(async (data: Partial<AppSession>) => {
-    await updateSession(data)
-  })
-  const updateSessionFn = useAction(updateSessionAction)
-
-
-  onMount(() => {
-
-
-    const unsub = pb.authStore.onChange((token) => {
-      console.log("Change", token)
-      updateSessionFn({ token })
-      setServerCookie('Set-Cookie', token)
-
-    }, true);
-
-    onCleanup(() => {
-      unsub()
-    })
-  })
-
 
   return (
     <PocketbaseContext.Provider value={pb}>
