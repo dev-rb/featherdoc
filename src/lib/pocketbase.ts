@@ -37,7 +37,11 @@ type QueryReturn<Name extends QueryNames, Method extends QueryMethods> = {
   isFetching: Accessor<boolean>;
 };
 
-function createQuery<Name extends QueryNames, Method extends QueryMethods>(
+function createQuery<
+  Expand = unknown,
+  Name extends QueryNames = QueryNames,
+  Method extends QueryMethods = QueryMethods,
+>(
   name: Name,
   method: Method,
   ...params: [
@@ -73,8 +77,8 @@ function createQuery<Name extends QueryNames, Method extends QueryMethods>(
       const result = (await _pb
         .collection<CollectionRecords[Name]>(name)
         // @ts-expect-error no clue how to type this
-        [method]<CollectionResponses[Name]>(...resolvedParams)) as Awaited<
-        CorrectValue<NarrowReturnType<ReturnType<RecordService[Method]>>, CollectionResponses[Name]>
+        [method]<CollectionResponses<Expand>[Name]>(...resolvedParams)) as Awaited<
+        CorrectValue<NarrowReturnType<ReturnType<RecordService[Method]>>, CollectionResponses<Expand>[Name]>
       >;
       console.debug(`[createQuery]: 
                    (token): ${_pb.authStore.token || 'EMPTY'} 

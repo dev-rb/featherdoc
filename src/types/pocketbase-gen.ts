@@ -100,13 +100,13 @@ export type CollectionRecords = {
   users: UsersRecord;
 };
 
-export type CollectionResponses = {
-  comments: CommentsResponse;
-  notebooks: NotebooksResponse;
-  playgrounds: PlaygroundsResponse;
-  scratchpads: ScratchpadsResponse;
-  threads: ThreadsResponse;
-  users: UsersResponse;
+export type CollectionResponses<Expand = unknown> = {
+  comments: CommentsResponse<Expand>;
+  notebooks: NotebooksResponse<Expand>;
+  playgrounds: PlaygroundsResponse<Expand>;
+  scratchpads: ScratchpadsResponse<Expand>;
+  threads: ThreadsResponse<Expand>;
+  users: UsersResponse<Expand>;
 };
 
 // Type for usage with type asserted PocketBase instance
