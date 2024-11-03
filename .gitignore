@@ -8,6 +8,8 @@ dist
 app.config.timestamp_*.js
 pocketbase
 pocketbase-bin
+pocketbase_api/pocketbase
+pocketbase_api/pb_data
 
 # Environment
 .env
