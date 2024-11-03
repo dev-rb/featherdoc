@@ -7,6 +7,7 @@ import { ThreadCard } from '~/components/threads/thread-card';
 import { Button } from '~/components/ui/Button';
 import { TextField, TextFieldInput } from '~/components/ui/TextField';
 import { createQuery } from '~/lib/pocketbase';
+import { UsersResponse } from '~/types/pocketbase-gen';
 
 export default function Threads() {
   const pb = usePocketbase();
@@ -24,7 +25,7 @@ export default function Threads() {
     return page;
   });
 
-  const threads = createQuery(
+  const threads = createQuery<{ author: UsersResponse }, 'threads', 'getList'>(
     'threads',
     'getList',
     currentPage,
@@ -34,7 +35,7 @@ export default function Threads() {
     })
   );
 
-  const threadWithId = createQuery(
+  const threadWithId = createQuery<{ author: UsersResponse }, 'threads', 'getOne'>(
     'threads',
     'getOne',
     () => params.id,
@@ -67,7 +68,7 @@ export default function Threads() {
             {(thread) => (
               <ThreadCard
                 id={thread.id}
-                author={thread.author}
+                author={thread.expand?.author.name || thread.expand?.author.username || ''}
                 title={thread.title}
                 resolved={thread.resolved}
                 timestamp={thread.created}
@@ -91,7 +92,7 @@ export default function Threads() {
             {(thread) => (
               <ThreadCard
                 id={thread().id}
-                author={thread().author}
+                author={thread().expand?.author.name || thread().expand?.author.username || 'Anonymous'}
                 title={thread().title}
                 resolved={thread().resolved}
                 timestamp={thread().created}
