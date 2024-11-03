@@ -19,6 +19,7 @@
     "@unocss/reset": "0.63.6",
     "class-variance-authority": "0.7.0",
     "clsx": "2.1.1",
+    "jwt-decode": "^4.0.0",
     "pocketbase": "0.21.5",
     "solid-js": "1.9.3",
     "tailwind-merge": "2.5.4",
