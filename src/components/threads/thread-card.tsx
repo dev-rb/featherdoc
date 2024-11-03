@@ -1,13 +1,17 @@
 import { A } from '@solidjs/router';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/Card';
 import { VoidComponent } from 'solid-js';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import dayjs from 'dayjs';
+
+dayjs.extend(relativeTime);
 
 interface ThreadCardProps {
   id: string;
   title: string;
   description?: string;
   author: string;
-  timestamp?: string;
+  timestamp: string;
   totalReplies: number;
   resolved?: boolean;
 }
@@ -18,7 +22,7 @@ export const ThreadCard: VoidComponent<ThreadCardProps> = (props) => {
       <CardHeader>
         <div class="w-full flex items-center justify-between">
           <span class="text-xs text-white px-2 py-1 bg-blue-600/50 rounded-full">{props.author}</span>
-          <span class="text-xs text-foreground/50">8h ago</span>
+          <span class="text-xs text-foreground/50">{dayjs(props.timestamp).fromNow()}</span>
         </div>
         <CardTitle class="leading-normal line-clamp-2 text-muted-foreground">{props.title}</CardTitle>
       </CardHeader>
