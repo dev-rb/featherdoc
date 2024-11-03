@@ -1,7 +1,8 @@
 import { ListResult, RecordOptions, RecordService } from 'pocketbase';
-import { Accessor, createMemo, createResource, ResourceOptions } from 'solid-js';
+import { Accessor, createMemo, createResource, InitializedResource, ResourceOptions, ResourceReturn } from 'solid-js';
 import { usePocketbase } from '~/components/pocketbase-context';
-import { CollectionRecords, CollectionResponses } from '~/types/pocketbase-gen';
+import { CollectionRecords, CollectionResponses, TypedPocketBase } from '~/types/pocketbase-gen';
+import { copy } from './utils';
 import { getRequestEvent, isServer } from 'solid-js/web';
 
 type QueryMethods = keyof Pick<RecordService, 'getList' | 'getOne' | 'getFirstListItem'>;
@@ -22,33 +23,46 @@ type GetParams<Name extends QueryNames, Method extends QueryMethods | MutationMe
 
 type ToAccessors<T> = { [K in keyof T]: Accessor<T[K]> };
 
-type QueryOptions = Pick<ResourceOptions<unknown>, 'initialValue' | 'deferStream'>;
+type QueryOptions = Pick<ResourceOptions<unknown>, 'initialValue' | 'deferStream'> & { enabled?: Accessor<boolean> };
 
 type NarrowReturnType<T> = T extends Promise<infer A> ? A : T extends Promise<ListResult<infer B>> ? B : T
 
 type CorrectValue<A, B> = A extends ListResult<any> ? ListResult<B> : B
 
-const createQuery = <Name extends QueryNames, Method extends QueryMethods>(
+
+type QueryReturn<Name extends QueryNames, Method extends QueryMethods> = {
+
+  data: InitializedResource<Awaited<
+    CorrectValue<NarrowReturnType<ReturnType<RecordService[Method]>>, CollectionResponses[Name]>
+  >>,
+  isLoading: Accessor<boolean>
+  isRefreshing: Accessor<boolean>
+  isFetching: Accessor<boolean>
+}
+
+function createQuery<Name extends QueryNames, Method extends QueryMethods>(
   name: Name,
   method: Method,
   ...params: [
     ...(Method extends AccessorEligible ? ToAccessors<GetParams<Name, Method>> : GetParams<Name, Method>),
     options?: QueryOptions,
   ]
-) => {
+) {
   const pb = usePocketbase()
   const getResourceOptions = () => {
     const lastParam = params[params.length - 1]
 
-    if (lastParam && ('deferStream' in lastParam || 'initialValue' in lastParam)) {
-      return lastParam
+    if (lastParam && ('deferStream' in lastParam || 'initialValue' in lastParam || 'enabled' in lastParam)) {
+      const { enabled, ...rest } = lastParam
+      return { resource: rest, enabled }
     }
 
     return
   }
-  const options = getResourceOptions() as QueryOptions | undefined
+  const options = getResourceOptions()
   const [data, s] = createResource(
     createMemo(() => {
+      if (options?.enabled && !options.enabled()) return
       const list =
         params.map((c) => {
           if (typeof c === 'function') return c();
@@ -75,7 +89,7 @@ const createQuery = <Name extends QueryNames, Method extends QueryMethods>(
 
       return result
     },
-    { ...(options as any) }
+    { ...(options?.resource as any) }
   );
 
   return {
