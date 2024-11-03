@@ -5,6 +5,8 @@ import { validator } from '~/lib/felte';
 import { FlowComponent } from 'solid-js';
 import { TypedPocketBase } from '~/types/pocketbase-gen';
 import Pocketbase from 'pocketbase';
+import { createAppSession } from '~/lib/session';
+import { getRequestEvent } from 'solid-js/web';
 
 const LoginSchema = v.object({
   email: v.pipe(v.string('Email is required'), v.email('Enter a valid email')),
@@ -14,11 +16,19 @@ const LoginSchema = v.object({
 type LoginData = v.InferInput<typeof LoginSchema>;
 
 const login = async (data: LoginData) => {
-  'use server'
+  'use server';
   const pb = new Pocketbase('http://127.0.0.1:8090') as TypedPocketBase;
   try {
     await pb.collection('users').authWithPassword(data.email, data.password);
-    await pb.collection('users').authRefresh()
+    await pb.collection('users').authRefresh();
+    const event = getRequestEvent();
+    if (event) {
+      event.locals.pb = pb;
+
+      const cookie = event.locals.pb.authStore.exportToCookie();
+
+      event.response.headers.set('Set-Cookie', cookie);
+    }
   } catch (err) {
     throw err;
   }
@@ -32,7 +42,7 @@ export const LoginForm: FlowComponent = (props) => {
     },
     extend: validator({ schema: LoginSchema }),
     onError(e) {
-      console.log("Fail", e)
+      console.log('Fail', e);
       setErrors('email', 'Email or password was incorrect');
       setErrors('password', 'Email or password was incorrect');
     },

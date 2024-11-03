@@ -2,7 +2,6 @@ import { ListResult, RecordOptions, RecordService } from 'pocketbase';
 import { Accessor, createMemo, createResource, InitializedResource, ResourceOptions, ResourceReturn } from 'solid-js';
 import { usePocketbase } from '~/components/pocketbase-context';
 import { CollectionRecords, CollectionResponses, TypedPocketBase } from '~/types/pocketbase-gen';
-import { copy } from './utils';
 import { getRequestEvent, isServer } from 'solid-js/web';
 
 type QueryMethods = keyof Pick<RecordService, 'getList' | 'getOne' | 'getFirstListItem'>;
