@@ -25,6 +25,10 @@ export default function Threads() {
     expand: 'author',
   }))
 
+  const threadWithId = createQuery('threads', 'getOne', () => params.id, () => ({
+    expand: 'author',
+  }), { enabled: () => params.id !== undefined })
+
   return (
     <main class="w-full h-full grid grid-cols-[auto_1fr_auto] overflow-hidden">
       <aside class="flex flex-col bg-muted min-w-md max-w-md overflow-hidden pt-4">
@@ -57,7 +61,22 @@ export default function Threads() {
           </div>
         }
       >
-        <article class="bg-muted rounded-lg m-4"></article>
+        <article class="bg-muted rounded-lg m-4">
+          <Show when={threadWithId.data()}>
+            {thread => (
+              <ThreadCard
+                id={thread().id}
+                author={thread().author}
+                title={thread().title}
+                resolved={thread().resolved}
+                timestamp={thread().created}
+                totalReplies={0}
+              />
+
+            )}
+
+          </Show>
+        </article>
         {/* <div class="grid grid-cols-1 grid-rows-2 w-full h-full"> */}
         {/*   <div class="bg-background" /> */}
         {/*   <div class="bg-background" /> */}
