@@ -6,25 +6,25 @@
     "dev": "vinxi dev",
     "build": "vinxi build",
     "start": "vinxi start",
-    "typegen": "npx pocketbase-typegen --db ./pocketbase_api/pb_data/data.db --out src/types/pocketbase.ts"
+    "typegen": "npx pocketbase-typegen --db ./pocketbase_api/pb_data/data.db --out src/types/pocketbase-gen.ts"
   },
   "dependencies": {
-    "@felte/common": "^1.1.8",
-    "@felte/solid": "^1.2.13",
-    "@iconify-json/lucide": "^1.2.10",
-    "@iconify-json/svg-spinners": "^1.2.1",
-    "@kobalte/core": "^0.13.6",
-    "@solidjs/router": "^0.14.10",
-    "@solidjs/start": "^1.0.9",
-    "@unocss/reset": "^0.59.2",
-    "class-variance-authority": "^0.7.0",
-    "clsx": "^2.1.1",
-    "pocketbase": "^0.21.5",
-    "solid-js": "^1.9.3",
-    "tailwind-merge": "^2.5.3",
-    "unocss": "^0.59.2",
-    "valibot": "^0.42.1",
-    "vinxi": "^0.4.3"
+    "@felte/common": "1.1.8",
+    "@felte/solid": "1.2.13",
+    "@iconify-json/lucide": "1.2.10",
+    "@iconify-json/svg-spinners": "1.2.1",
+    "@kobalte/core": "0.13.6",
+    "@solidjs/router": "0.15.0",
+    "@solidjs/start": "1.0.10",
+    "@unocss/reset": "0.63.6",
+    "class-variance-authority": "0.7.0",
+    "clsx": "2.1.1",
+    "pocketbase": "0.21.5",
+    "solid-js": "1.9.3",
+    "tailwind-merge": "2.5.4",
+    "unocss": "0.63.6",
+    "valibot": "0.42.1",
+    "vinxi": "0.4.3"
   },
   "engines": {
     "node": ">=18"
@@ -38,6 +38,5 @@
     "eslint": "^9.13.0",
     "prettier": "^3.3.3",
     "unocss-preset-primitives": "0.0.2-beta.1"
-  },
-  "packageManager": "pnpm@9.8.0+sha512.8e4c3550fb500e808dbc30bb0ce4dd1eb614e30b1c55245f211591ec2cdf9c611cabd34e1364b42f564bd54b3945ed0f49d61d1bbf2ec9bd74b866fcdc723276"
+  }
 }
