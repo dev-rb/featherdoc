@@ -2,6 +2,7 @@ import { ListResult, RecordOptions, RecordService } from 'pocketbase';
 import { Accessor, createMemo, createResource, ResourceOptions } from 'solid-js';
 import { usePocketbase } from '~/components/pocketbase-context';
 import { CollectionRecords, CollectionResponses } from '~/types/pocketbase-gen';
+import { getRequestEvent, isServer } from 'solid-js/web';
 
 type QueryMethods = keyof Pick<RecordService, 'getList' | 'getOne' | 'getFirstListItem'>;
 
@@ -58,13 +59,19 @@ const createQuery = <Name extends QueryNames, Method extends QueryMethods>(
     }
     ),
     async (resolvedParams) => {
-      const result =  (await pb
+      const event = getRequestEvent()
+      const _pb = (isServer ? event ? event?.locals.pb : pb : pb) as TypedPocketBase
+      const result = (await _pb
         .collection<CollectionRecords[Name]>(name)
       // @ts-expect-error no clue how to type this
       [method]<CollectionResponses[Name]>(...resolvedParams)) as (Awaited<
         CorrectValue<NarrowReturnType<ReturnType<RecordService[Method]>>, CollectionResponses[Name]>
       >);
-      console.log("pocketbase query", method,resolvedParams, "RESULT",result)
+      console.debug(`[createQuery]: 
+                   (token): ${_pb.authStore.token || 'EMPTY'} 
+                   (method): ${method} 
+                   (params): ${JSON.stringify(resolvedParams)} 
+                   (result): ${JSON.stringify(result)}`)
 
       return result
     },
