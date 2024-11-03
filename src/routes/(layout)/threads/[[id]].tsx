@@ -49,10 +49,14 @@ export default function Threads() {
     <main class="w-full h-full grid grid-cols-[auto_1fr_auto] overflow-hidden">
       <aside class="flex flex-col bg-muted min-w-md max-w-md overflow-hidden pt-4">
         <div class="w-full p-2 flex flex-col gap-2">
-          <Collapsible.Root class="flex flex-col gap-2 w-full">
-            <Collapsible.Trigger as={Button} size="sm" class="w-fit self-end gap-2">
-              <i class="i-lucide-message-square inline-block text-lg" />
-              New Thread
+          <Collapsible.Root class="flex flex-col gap-2 w-full ui-expanded:bg-muted-foreground/20 p-2 rounded-lg">
+            <Collapsible.Trigger
+              as={Button}
+              size="sm"
+              class="group w-fit ui-expanded:(p-0 aspect-square rounded-full) self-end gap-2 transition-all"
+            >
+              <i class="group-data-[expanded]:i-lucide-x i-lucide-message-square inline-block text-lg" />
+              <span class="group-data-[expanded]:hidden">New Thread</span>
             </Collapsible.Trigger>
             <Collapsible.Content>
               <CreateThreadForm />

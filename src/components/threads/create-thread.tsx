@@ -44,7 +44,7 @@ export const CreateThreadForm: ParentComponent = (props) => {
   form;
 
   return (
-    <form use:form class="flex flex-col gap-2 bg-muted-foreground/20 p-2 rounded-lg">
+    <form use:form class="flex flex-col gap-2">
       <TextField name="title" class="text-foreground">
         <TextFieldTextArea class="resize-none min-h-30" placeholder="Title..." />
       </TextField>
