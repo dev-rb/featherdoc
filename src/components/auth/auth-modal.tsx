@@ -4,12 +4,15 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Stepper, StepperItem } from '../ui/Stepper';
 import { LoginForm } from './login';
 import { SignupForm } from './signup';
+import { usePocketbase } from '../pocketbase-context';
+import { isTokenExpired } from 'pocketbase';
 
 export const AuthModal = () => {
+  const pb = usePocketbase()
   const [step, setStep] = createSignal(0);
 
   return (
-    <Dialog defaultOpen={true}>
+    <Dialog defaultOpen={!pb.authStore.isValid || !pb.authStore.token || isTokenExpired(pb.authStore.token)}>
       <DialogContent>
         <Stepper step={step()} onStepChange={setStep}>
           <StepperItem>
