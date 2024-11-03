@@ -2,10 +2,11 @@ import * as v from 'valibot';
 import { validator } from '~/lib/felte';
 import { TextField, TextFieldErrorMessage, TextFieldInput, TextFieldLabel } from '../ui/TextField';
 import { createForm } from '@felte/solid';
-import { pb } from '~/lib/pocketbase';
 import { FlowComponent } from 'solid-js';
 import { ClientResponseError } from 'pocketbase';
 import { createAppSession } from '~/lib/session';
+import { TypedPocketBase } from '~/types/pocketbase-gen';
+import { usePocketbase } from '../pocketbase-context';
 
 const SignupSchema = v.pipe(
   v.object({
@@ -37,15 +38,15 @@ const SignupSchema = v.pipe(
 
 type SignupData = v.InferInput<typeof SignupSchema>;
 
-const signup = async (data: SignupData) => {
+const signup = async (pb: TypedPocketBase, data: SignupData) => {
   try {
-    const response = await pb.collection('users').create({
+    await pb.collection('users').create({
       email: data.email,
       password: data.password,
       passwordConfirm: data.confirmPassword,
     });
-    createAppSession({});
-    console.log('Sign up', response);
+    const response = await pb.collection('users').authRefresh()
+    createAppSession({ token: response.token });
   } catch (err) {
     const e = err as ClientResponseError;
     console.error(e.data);
@@ -54,6 +55,7 @@ const signup = async (data: SignupData) => {
 };
 
 export const SignupForm: FlowComponent = (props) => {
+  const pb = usePocketbase()
   const { form, errors, setErrors, touched } = createForm({
     initialValues: {
       email: '',
@@ -67,7 +69,7 @@ export const SignupForm: FlowComponent = (props) => {
       setErrors('confirmPassword', 'Something went wrong');
     },
     async onSubmit(values) {
-      return await signup(values);
+      return await signup(pb, values);
     },
   });
   form;

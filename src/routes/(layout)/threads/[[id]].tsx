@@ -1,10 +1,12 @@
 import { useParams, useSearchParams } from '@solidjs/router';
 import { createMemo, createSignal, For, Show } from 'solid-js';
+import { usePocketbase } from '~/components/pocketbase-context';
 import { ThreadCard } from '~/components/threads/thread-card';
 import { TextField, TextFieldInput } from '~/components/ui/TextField';
 import { createQuery } from '~/lib/pocketbase';
 
 export default function Threads() {
+  const pb = usePocketbase()
   const params = useParams<{ id: string }>();
 
   const [searchParams, setSearchParams] = useSearchParams()
@@ -20,7 +22,7 @@ export default function Threads() {
   })
 
   const threads = createQuery('threads', 'getList', currentPage, () => 50, () => ({
-    expand: 'author'
+    expand: 'author',
   }))
 
   return (

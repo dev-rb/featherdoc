@@ -3,11 +3,11 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/Card
 import { VoidComponent } from 'solid-js';
 
 interface ThreadCardProps {
-  id: number;
+  id: string;
   title: string;
-  description: string;
+  description?: string;
   author: string;
-  timestamp?: number;
+  timestamp?: string;
   totalReplies: number;
   resolved?: boolean;
 }

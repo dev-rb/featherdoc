@@ -1,10 +1,7 @@
-import { action, createAsync, createAsyncStore } from '@solidjs/router';
-import Pocketbase, { ListResult, RecordOptions, RecordService } from 'pocketbase';
-import { Accessor, createResource, ResourceOptions } from 'solid-js';
-import { TypedPocketBase, CollectionRecords, CollectionResponses } from '~/types/pocketbase-gen';
-export const pb = new Pocketbase('http://127.0.0.1:8090') as TypedPocketBase;
-
-// type Methods = 'list' | 'one' | 'filter-first' | 'create' | 'update' | 'delete';
+import { ListResult, RecordOptions, RecordService } from 'pocketbase';
+import { Accessor, createMemo, createResource, ResourceOptions } from 'solid-js';
+import { usePocketbase } from '~/components/pocketbase-context';
+import { CollectionRecords, CollectionResponses } from '~/types/pocketbase-gen';
 
 type QueryMethods = keyof Pick<RecordService, 'getList' | 'getOne' | 'getFirstListItem'>;
 
@@ -38,19 +35,38 @@ const createQuery = <Name extends QueryNames, Method extends QueryMethods>(
     options?: QueryOptions,
   ]
 ) => {
-  const options = params[params.length - 1] as QueryOptions | undefined;
+  const pb = usePocketbase()
+  const getResourceOptions = () => {
+    const lastParam = params[params.length - 1]
+
+    if (lastParam && ('deferStream' in lastParam || 'initialValue' in lastParam)) {
+      return lastParam
+    }
+
+    return
+  }
+  const options = getResourceOptions() as QueryOptions | undefined
   const [data, s] = createResource(
-    params.map((c) => {
-      if (typeof c === 'function') return c();
-      return c;
-    }),
+    createMemo(() => {
+      const list =
+        params.map((c) => {
+          if (typeof c === 'function') return c();
+          return c;
+        })
+
+      return list
+    }
+    ),
     async (resolvedParams) => {
-      return (await pb
+      const result =  (await pb
         .collection<CollectionRecords[Name]>(name)
       // @ts-expect-error no clue how to type this
-      [method]<CollectionResponses[Name]>(resolvedParams)) as (Awaited<
+      [method]<CollectionResponses[Name]>(...resolvedParams)) as (Awaited<
         CorrectValue<NarrowReturnType<ReturnType<RecordService[Method]>>, CollectionResponses[Name]>
       >);
+      console.log("pocketbase query", method,resolvedParams, "RESULT",result)
+
+      return result
     },
     { ...(options as any) }
   );
@@ -66,6 +82,7 @@ const createQuery = <Name extends QueryNames, Method extends QueryMethods>(
 };
 
 const createMutation = <Name extends QueryNames, Method extends MutationMethods>(name: Name, method: Method) => {
+  const pb = usePocketbase()
   const action = pb.collection(name)[method];
 
   return {
