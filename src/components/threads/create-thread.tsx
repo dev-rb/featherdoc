@@ -6,6 +6,7 @@ import { ParentComponent } from 'solid-js';
 import { Button } from '../ui/Button';
 import { createMutation } from '~/lib/pocketbase';
 import { usePocketbase } from '../pocketbase-context';
+import { useApp } from '../app-context';
 
 const CreateThreadSchema = v.object({
   title: v.pipe(v.string(), v.minLength(1)),
@@ -15,18 +16,19 @@ const CreateThreadSchema = v.object({
 type CreateThreadValues = v.InferInput<typeof CreateThreadSchema>;
 
 export const CreateThreadForm: ParentComponent = (props) => {
-  const pb = usePocketbase();
+  const app = useApp();
   const createThread = createMutation('threads', 'create');
 
-  const { form, isDirty } = createForm<CreateThreadValues>({
+  const { form, isDirty, isSubmitting } = createForm<CreateThreadValues>({
     extend: validator({ schema: CreateThreadSchema }),
-    onSubmit(values) {
-      // createThread.mutate({
-      //   author: '',
-      //   title: values.title,
-      //   content: values.description,
-      // })
-      //
+    async onSubmit(values) {
+      const data = app.session();
+      if (!data.userId) return;
+      await createThread.mutateAsync({
+        author: data.userId,
+        title: values.title,
+        content: values.description,
+      });
     },
   });
 
@@ -41,7 +43,7 @@ export const CreateThreadForm: ParentComponent = (props) => {
         <TextFieldTextArea class="resize-none min-h-xs" placeholder="Description..." />
       </TextField>
 
-      <Button class="gap-2 w-fit self-end mt-5" type="submit" disabled={!isDirty()}>
+      <Button class="gap-2 w-fit self-end mt-5" type="submit" disabled={!isDirty()} loading={isSubmitting()}>
         <i class="i-lucide-message-square inline-block" />
         Post
       </Button>
