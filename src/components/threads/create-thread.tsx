@@ -19,16 +19,25 @@ export const CreateThreadForm: ParentComponent = (props) => {
   const app = useApp();
   const createThread = createMutation('threads', 'create');
 
-  const { form, isDirty, isSubmitting } = createForm<CreateThreadValues>({
+  const { form, isDirty, isSubmitting, setIsSubmitting, reset } = createForm<CreateThreadValues>({
+    initialValues: {
+      title: '',
+      description: undefined,
+    },
     extend: validator({ schema: CreateThreadSchema }),
     async onSubmit(values) {
       const data = app.session();
       if (!data.userId) return;
+      setIsSubmitting(true);
       await createThread.mutateAsync({
         author: data.userId,
         title: values.title,
         content: values.description,
       });
+      reset();
+    },
+    onSuccess() {
+      setIsSubmitting(false);
     },
   });
 
@@ -43,7 +52,12 @@ export const CreateThreadForm: ParentComponent = (props) => {
         <TextFieldTextArea class="resize-none min-h-xs" placeholder="Description..." />
       </TextField>
 
-      <Button class="gap-2 w-fit self-end mt-5" type="submit" disabled={!isDirty()} loading={isSubmitting()}>
+      <Button
+        class="gap-2 w-fit self-end mt-5"
+        type="submit"
+        disabled={!isDirty() || isSubmitting()}
+        loading={isSubmitting()}
+      >
         <i class="i-lucide-message-square inline-block" />
         Post
       </Button>
