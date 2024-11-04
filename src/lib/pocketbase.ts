@@ -158,7 +158,6 @@ function createQuery<
   return {
     data: data,
     isLoading: () => {
-      console.log('State', state());
       return state() === 'loading';
     },
   };

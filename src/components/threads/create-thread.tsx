@@ -4,7 +4,7 @@ import { validator } from '~/lib/felte';
 import { TextField, TextFieldInput, TextFieldLabel, TextFieldTextArea } from '../ui/TextField';
 import { ParentComponent } from 'solid-js';
 import { Button } from '../ui/Button';
-import { createMutation } from '~/lib/pocketbase';
+import { createMutation, invalidateQuery } from '~/lib/pocketbase';
 import { usePocketbase } from '../pocketbase-context';
 import { useApp } from '../app-context';
 
@@ -34,6 +34,7 @@ export const CreateThreadForm: ParentComponent = (props) => {
         title: values.title,
         content: values.description,
       });
+      invalidateQuery('threads/getList');
       reset();
     },
     onSuccess() {

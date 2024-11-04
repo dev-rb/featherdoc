@@ -78,9 +78,27 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
   form;
 
   return (
-    <div class="max-w-2xl w-full h-full grid grid-rows-[1fr_auto] grid-cols-1">
-      <div class="flex flex-col gap-8">
-        <For each={comments.data()?.items}>
+    <div class="w-full h-full grid grid-rows-[auto_minmax(1fr,100%)_auto] grid-cols-1 gap-8">
+      <div class="w-full max-h-min flex flex-col gap-2 pt-4 pb-8 border-b-muted-foreground/50 border-b-2">
+        <div class="w-full flex items-start gap-4">
+          <div class="bg-blue-600/50 w-10 h-10 aspect-square rounded-full"></div>
+          <div class="flex flex-col gap-2">
+            <div class="flex items-center gap-1">
+              <span class="text-blue-500 text-sm">{props.expand?.author.name || props.expand?.author.username}</span>
+              <span class="text-xs text-foreground/50">{dayjs(props.created).fromNow()}</span>
+            </div>
+
+            <h1 class="text-foreground font-medium text-lg">{props.title}</h1>
+            <p class="text-sm text-foreground/70">{props.content}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-8 h-full overflow-auto">
+        <For
+          each={comments.data()?.items}
+          fallback={<div class="text-muted-foreground text-center">Be the first to reply to this post</div>}
+        >
           {(comment) => (
             <div class="w-full flex items-start gap-4">
               <div class="bg-blue-600/50 w-10 h-10 aspect-square rounded-full"></div>
@@ -96,6 +114,7 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
           )}
         </For>
       </div>
+
       <form
         use:form
         class="row-start-3 w-full flex gap-2 items-center justify-between p-2 bg-foreground/10 focus-within:(ring ring-ring) rounded-md"
@@ -105,6 +124,7 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
             class="p-0 resize-none bg-transparent rounded-0 border-none focus-visible:ring-none min-h-[50px] max-h-xs"
             autoResize
             placeholder="Send a message..."
+            submitOnEnter={true}
           />
         </TextField>
         <Button type="submit" size="icon" class="rounded-full">

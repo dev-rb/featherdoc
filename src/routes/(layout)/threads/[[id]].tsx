@@ -88,7 +88,7 @@ export default function Threads() {
           </div>
         }
       >
-        <article class="w-full bg-muted rounded-lg m-4">
+        <article class="w-full h-full overflow-hidden bg-muted rounded-lg p-4">
           <Show when={threadWithId.data()}>{(thread) => <ThreadView {...thread()} />}</Show>
         </article>
         {/* <div class="grid grid-cols-1 grid-rows-2 w-full h-full"> */}
