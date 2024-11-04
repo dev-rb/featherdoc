@@ -1,6 +1,6 @@
 import { Collapsible } from '@kobalte/core';
 import { useParams, useSearchParams } from '@solidjs/router';
-import { createEffect, createMemo, createSignal, For, Show } from 'solid-js';
+import { createEffect, createMemo, createSignal, For, Show, Suspense } from 'solid-js';
 import { usePocketbase } from '~/components/pocketbase-context';
 import { CreateThreadForm } from '~/components/threads/create-thread';
 import { ThreadCard } from '~/components/threads/thread-card';
@@ -60,20 +60,23 @@ export default function Threads() {
           <TextField>
             <TextFieldInput class="bg-muted-foreground/50" type="search" placeholder="Search threads..." />
           </TextField>
+          <div class="text-white">{threads.isLoading() ? 'LOADING DATA' : 'NOT LOADING'}</div>
         </div>
         <div class="w-full h-full custom-v-scrollbar pb-4 px-2 flex flex-col gap-2 overflow-auto">
-          <For each={threads.data()?.items} fallback={<div>No threads available</div>}>
-            {(thread) => (
-              <ThreadCard
-                id={thread.id}
-                author={thread.expand?.author.name || thread.expand?.author.username || ''}
-                title={thread.title}
-                resolved={thread.resolved}
-                timestamp={thread.created}
-                totalReplies={0}
-              />
-            )}
-          </For>
+          <Suspense>
+            <For each={threads.data()?.items} fallback={<div>No threads available</div>}>
+              {(thread) => (
+                <ThreadCard
+                  id={thread.id}
+                  author={thread.expand!.author}
+                  title={thread.title}
+                  resolved={thread.resolved}
+                  timestamp={thread.created}
+                  totalReplies={0}
+                />
+              )}
+            </For>
+          </Suspense>
         </div>
       </aside>
       <Show
