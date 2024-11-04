@@ -2,7 +2,7 @@ import { query, createAsync } from '@solidjs/router';
 import { jwtDecode } from 'jwt-decode';
 import Pocketbase from 'pocketbase';
 import { createContext, createRenderEffect, FlowComponent, useContext } from 'solid-js';
-import { getRequestEvent } from 'solid-js/web';
+import { getRequestEvent, isServer } from 'solid-js/web';
 import { TypedPocketBase } from '~/types/pocketbase-gen';
 
 const PocketbaseContext = createContext<TypedPocketBase>();
@@ -39,10 +39,17 @@ export const cacheSession = query(async () => {
 export const PocketbaseProvider: FlowComponent = (props) => {
   const sessionData = createAsync(() => cacheSession(), { deferStream: true });
 
-  const pb = new Pocketbase('http://127.0.0.1:8090') as TypedPocketBase;
+  let pb = new Pocketbase('http://127.0.0.1:8090') as TypedPocketBase;
 
   createRenderEffect(() => {
     const data = sessionData();
+
+    if (isServer) {
+      const event = getRequestEvent();
+      if (event && event.locals.pb) {
+        pb = event.locals.pb;
+      }
+    }
 
     if (!data) return;
 

@@ -7,6 +7,8 @@ import { ClientResponseError } from 'pocketbase';
 import { createAppSession } from '~/lib/session';
 import { TypedPocketBase } from '~/types/pocketbase-gen';
 import { usePocketbase } from '../pocketbase-context';
+import { getRequestEvent } from 'solid-js/web';
+import Pocketbase from 'pocketbase';
 
 const SignupSchema = v.pipe(
   v.object({
@@ -38,15 +40,23 @@ const SignupSchema = v.pipe(
 
 type SignupData = v.InferInput<typeof SignupSchema>;
 
-const signup = async (pb: TypedPocketBase, data: SignupData) => {
+const signup = async (data: SignupData) => {
+  'use server';
+  const pb = new Pocketbase('http://127.0.0.1:8090') as TypedPocketBase;
   try {
     await pb.collection('users').create({
       email: data.email,
       password: data.password,
       passwordConfirm: data.confirmPassword,
     });
-    const response = await pb.collection('users').authRefresh()
-    createAppSession({ token: response.token });
+    const event = getRequestEvent();
+    if (event) {
+      event.locals.pb = pb;
+
+      const cookie = event.locals.pb.authStore.exportToCookie();
+
+      event.response.headers.set('Set-Cookie', cookie);
+    }
   } catch (err) {
     const e = err as ClientResponseError;
     console.error(e.data);
@@ -55,7 +65,6 @@ const signup = async (pb: TypedPocketBase, data: SignupData) => {
 };
 
 export const SignupForm: FlowComponent = (props) => {
-  const pb = usePocketbase()
   const { form, errors, setErrors, touched } = createForm({
     initialValues: {
       email: '',
@@ -69,21 +78,21 @@ export const SignupForm: FlowComponent = (props) => {
       setErrors('confirmPassword', 'Something went wrong');
     },
     async onSubmit(values) {
-      return await signup(pb, values);
+      return await signup(values);
     },
   });
   form;
   return (
     <form use:form class="grid grid-cols-1 grid-rows-2 gap-8 py-4 px-8">
       <TextField required validationState={touched('email') && errors('email')?.length ? 'invalid' : 'valid'}>
-        <TextFieldLabel class="flex flex-col gap-2 text-white">
+        <TextFieldLabel class="flex flex-col gap-2 text-foreground">
           Email
           <TextFieldInput type="email" name="email" />
           <TextFieldErrorMessage>{errors('email')?.join(' ')}</TextFieldErrorMessage>
         </TextFieldLabel>
       </TextField>
       <TextField required validationState={touched('password') && errors('password')?.length ? 'invalid' : 'valid'}>
-        <TextFieldLabel class="flex flex-col gap-2 text-white">
+        <TextFieldLabel class="flex flex-col gap-2 text-foreground">
           Password
           <TextFieldInput type="password" name="password" />
           <TextFieldErrorMessage>{errors('password')?.join(' ')}</TextFieldErrorMessage>
@@ -93,7 +102,7 @@ export const SignupForm: FlowComponent = (props) => {
         required
         validationState={touched('confirmPassword') && errors('confirmPassword')?.length ? 'invalid' : 'valid'}
       >
-        <TextFieldLabel class="flex flex-col gap-2 text-white">
+        <TextFieldLabel class="flex flex-col gap-2 text-foreground">
           Confirm Password
           <TextFieldInput type="password" name="confirmPassword" />
           <TextFieldErrorMessage>{errors('confirmPassword')?.join(' ')}</TextFieldErrorMessage>
