@@ -1,13 +1,14 @@
 import { Collapsible } from '@kobalte/core';
 import { useParams, useSearchParams } from '@solidjs/router';
-import { createMemo, createSignal, For, Show } from 'solid-js';
+import { createEffect, createMemo, createSignal, For, Show } from 'solid-js';
 import { usePocketbase } from '~/components/pocketbase-context';
 import { CreateThreadForm } from '~/components/threads/create-thread';
 import { ThreadCard } from '~/components/threads/thread-card';
+import { ThreadView } from '~/components/threads/thread-view';
 import { Button } from '~/components/ui/Button';
 import { TextField, TextFieldInput } from '~/components/ui/TextField';
 import { createQuery } from '~/lib/pocketbase';
-import { UsersResponse } from '~/types/pocketbase-gen';
+import { CommentsResponse, UsersResponse } from '~/types/pocketbase-gen';
 
 export default function Threads() {
   const pb = usePocketbase();
@@ -25,12 +26,8 @@ export default function Threads() {
     return page;
   });
 
-  const threads = createQuery<{ author: UsersResponse }, 'threads', 'getList'>(
-    'threads',
-    'getList',
-    currentPage,
-    () => 50,
-    () => ({
+  const threads = createQuery<{ author: UsersResponse }, 'threads', 'getList'>('threads', 'getList', (s) =>
+    s(currentPage(), 50, {
       expand: 'author',
     })
   );
@@ -38,10 +35,7 @@ export default function Threads() {
   const threadWithId = createQuery<{ author: UsersResponse }, 'threads', 'getOne'>(
     'threads',
     'getOne',
-    () => params.id,
-    () => ({
-      expand: 'author',
-    }),
+    (s) => s(params.id, { expand: 'author' }),
     { enabled: () => params.id !== undefined }
   );
 
@@ -68,7 +62,7 @@ export default function Threads() {
           </TextField>
         </div>
         <div class="w-full h-full custom-v-scrollbar pb-4 px-2 flex flex-col gap-2 overflow-auto">
-          <For each={threads.data.latest?.items}>
+          <For each={threads.data()?.items}>
             {(thread) => (
               <ThreadCard
                 id={thread.id}
@@ -91,19 +85,8 @@ export default function Threads() {
           </div>
         }
       >
-        <article class="bg-muted rounded-lg m-4">
-          <Show when={threadWithId.data()}>
-            {(thread) => (
-              <ThreadCard
-                id={thread().id}
-                author={thread().expand?.author.name || thread().expand?.author.username || 'Anonymous'}
-                title={thread().title}
-                resolved={thread().resolved}
-                timestamp={thread().created}
-                totalReplies={0}
-              />
-            )}
-          </Show>
+        <article class="w-full bg-muted rounded-lg m-4">
+          <Show when={threadWithId.data()}>{(thread) => <ThreadView {...thread()} />}</Show>
         </article>
         {/* <div class="grid grid-cols-1 grid-rows-2 w-full h-full"> */}
         {/*   <div class="bg-background" /> */}
