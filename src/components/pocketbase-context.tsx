@@ -50,7 +50,6 @@ export const PocketbaseProvider: FlowComponent = (props) => {
     if (isServer) {
       const event = getRequestEvent();
       if (event && event.locals.pb) {
-        console.log(event.locals.pb);
         pb = event.locals.pb;
       }
     }
