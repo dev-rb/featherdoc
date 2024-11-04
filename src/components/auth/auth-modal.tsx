@@ -6,13 +6,14 @@ import { LoginForm } from './login';
 import { SignupForm } from './signup';
 import { usePocketbase } from '../pocketbase-context';
 import { isTokenExpired } from 'pocketbase';
+import { useApp } from '../app-context';
 
 export const AuthModal = () => {
-  const pb = usePocketbase()
+  const app = useApp();
   const [step, setStep] = createSignal(0);
 
   return (
-    <Dialog defaultOpen={!pb.authStore.isValid || !pb.authStore.token || isTokenExpired(pb.authStore.token)}>
+    <Dialog open={!app.authed()}>
       <DialogContent>
         <Stepper step={step()} onStepChange={setStep}>
           <StepperItem>
