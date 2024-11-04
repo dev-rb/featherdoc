@@ -1,4 +1,4 @@
-import { query, createAsync } from '@solidjs/router';
+import { query, createAsync, revalidate } from '@solidjs/router';
 import { jwtDecode } from 'jwt-decode';
 import Pocketbase from 'pocketbase';
 import { createContext, createRenderEffect, FlowComponent, useContext } from 'solid-js';
@@ -25,15 +25,18 @@ export const usePocketbase = () => {
 export const cacheSession = query(async () => {
   'use server';
   const event = getRequestEvent();
-  const cookie = event?.response.headers.get('Set-Cookie');
+  const cookie = event?.request.headers.get('cookie');
 
-  event?.locals.pb.authStore.loadFromCookie(cookie || '');
+  if (event) {
+    event.locals.pb = new Pocketbase('http://127.0.0.1:8090');
+  }
+  event?.locals.pb?.authStore.loadFromCookie(cookie || '');
 
-  if (!cookie || !event || !event.locals.pb.authStore.token) return;
+  if (!cookie) return;
 
   const decoded = jwtDecode(cookie) as PBPayload;
 
-  return { token: event.locals.pb.authStore.token, payload: decoded };
+  return { token: cookie, payload: decoded };
 }, 'session');
 
 export const PocketbaseProvider: FlowComponent = (props) => {
@@ -47,13 +50,14 @@ export const PocketbaseProvider: FlowComponent = (props) => {
     if (isServer) {
       const event = getRequestEvent();
       if (event && event.locals.pb) {
+        console.log(event.locals.pb);
         pb = event.locals.pb;
       }
     }
 
     if (!data) return;
 
-    pb.authStore.save(data.token);
+    pb.authStore.loadFromCookie(data.token);
   });
 
   return <PocketbaseContext.Provider value={pb}>{props.children}</PocketbaseContext.Provider>;

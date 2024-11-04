@@ -7,6 +7,7 @@ import { TypedPocketBase } from '~/types/pocketbase-gen';
 import Pocketbase from 'pocketbase';
 import { createAppSession } from '~/lib/session';
 import { getRequestEvent } from 'solid-js/web';
+import { revalidate } from '@solidjs/router';
 
 const LoginSchema = v.object({
   email: v.pipe(v.string('Email is required'), v.email('Enter a valid email')),
@@ -24,8 +25,7 @@ const login = async (data: LoginData) => {
     const event = getRequestEvent();
     if (event) {
       event.locals.pb = pb;
-
-      const cookie = event.locals.pb.authStore.exportToCookie();
+      const cookie = pb.authStore.exportToCookie();
 
       event.response.headers.set('Set-Cookie', cookie);
     }
@@ -48,6 +48,7 @@ export const LoginForm: FlowComponent = (props) => {
     },
     async onSubmit(values) {
       await login(values);
+      await revalidate('session', true);
     },
   });
   form;
