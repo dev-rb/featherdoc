@@ -1,14 +1,14 @@
-import { For, onCleanup, onMount, VoidComponent } from 'solid-js';
-import { createMutation, createQuery, createRealtimeResource } from '~/lib/pocketbase';
-import { CommentsResponse, ThreadsResponse, UsersResponse } from '~/types/pocketbase-gen';
+import { For, VoidComponent } from 'solid-js';
+import { createMutation, createRealtimeResource } from '~/lib/pocketbase';
+import { ThreadsResponse, UsersResponse } from '~/types/pocketbase-gen';
 import { usePocketbase } from '../pocketbase-context';
 import { createForm } from '@felte/solid';
 import * as v from 'valibot';
 import { validator } from '~/lib/felte';
 import { useApp } from '../app-context';
-import { TextField, TextFieldInput, TextFieldTextArea } from '../ui/TextField';
+import { TextField, TextFieldTextArea } from '../ui/TextField';
 import { Button } from '../ui/Button';
-import { createStore } from 'solid-js/store';
+import dayjs from 'dayjs';
 
 const CreateCommentSchema = v.object({
   content: v.pipe(v.string(), v.minLength(1)),
@@ -53,7 +53,7 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
 
   const createComment = createMutation('comments', 'create');
 
-  const { form, isDirty, touched, reset } = createForm<CreateCommentValues>({
+  const { form, reset } = createForm<CreateCommentValues>({
     initialValues: {
       content: '',
     },
@@ -79,14 +79,35 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
 
   return (
     <div class="max-w-2xl w-full h-full grid grid-rows-[1fr_auto] grid-cols-1">
-      <div class="flex flex-col gap-4">
-        <For each={comments.data()?.items}>{(comment) => <div class="text-white">{comment.content}</div>}</For>
+      <div class="flex flex-col gap-8">
+        <For each={comments.data()?.items}>
+          {(comment) => (
+            <div class="w-full flex items-start gap-4">
+              <div class="bg-blue-600/50 w-10 h-10 aspect-square rounded-full"></div>
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-1">
+                  <span class="text-blue-500 text-sm">{comment.author}</span>
+                  <span class="text-xs text-foreground/50">{dayjs(comment.created).fromNow()}</span>
+                </div>
+
+                <div class="w-full h-max text-foreground">{comment.content}</div>
+              </div>
+            </div>
+          )}
+        </For>
       </div>
-      <form use:form class="row-start-3 w-full flex gap-2 items-center justify-between">
-        <TextField name="content" class="flex-1 text-foreground">
-          <TextFieldTextArea />
+      <form
+        use:form
+        class="row-start-3 w-full flex gap-2 items-center justify-between p-2 bg-foreground/10 focus-within:(ring ring-ring) rounded-md"
+      >
+        <TextField name="content" class="flex-1 text-foreground rounded-0">
+          <TextFieldTextArea
+            class="p-0 resize-none bg-transparent rounded-0 border-none focus-visible:ring-none min-h-[50px] max-h-xs"
+            autoResize
+            placeholder="Send a message..."
+          />
         </TextField>
-        <Button type="submit" size="icon">
+        <Button type="submit" size="icon" class="rounded-full">
           <i class="i-lucide-send-horizontal" />
         </Button>
       </form>

@@ -62,7 +62,7 @@ export default function Threads() {
           </TextField>
         </div>
         <div class="w-full h-full custom-v-scrollbar pb-4 px-2 flex flex-col gap-2 overflow-auto">
-          <For each={threads.data()?.items}>
+          <For each={threads.data()?.items} fallback={<div>No threads available</div>}>
             {(thread) => (
               <ThreadCard
                 id={thread.id}
