@@ -81,11 +81,14 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
     <div class="w-full h-full grid grid-rows-[auto_minmax(1fr,100%)_auto] grid-cols-1 gap-8">
       <div class="w-full max-h-min flex flex-col gap-2 pt-4 pb-8 border-b-muted-foreground/50 border-b-2">
         <div class="w-full flex items-start gap-4">
-          <div class="bg-blue-600/50 w-10 h-10 aspect-square rounded-full"></div>
-          <div class="flex flex-col gap-2">
-            <div class="flex items-center gap-1">
+          <div class="bg-blue-600/50 w-10 h-10 aspect-square rounded-full" />
+          <div class="w-full flex flex-col gap-2">
+            <div class="w-full flex items-center gap-1">
               <span class="text-blue-500 text-sm">{props.expand?.author.name || props.expand?.author.username}</span>
               <span class="text-xs text-foreground/50">{dayjs(props.created).fromNow()}</span>
+              <Button variant="default" size="icon" class="size-6 ml-auto">
+                <i class="i-lucide-edit inline-block" />
+              </Button>
             </div>
 
             <h1 class="text-foreground font-medium text-lg">{props.title}</h1>
