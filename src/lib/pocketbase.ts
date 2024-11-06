@@ -329,13 +329,12 @@ const createRealtimeResource = <Name extends QueryNames, Method extends QueryMet
   const options = getResourceOptions();
   const [data, s] = createResource(
     createMemo(() => {
+      const resolvedParams = params(getParamsHelper);
       if (options?.enabled && !options.enabled()) return;
 
-      return true;
+      return resolvedParams;
     }),
-    async () => {
-      const resolvedParams = params(getParamsHelper);
-
+    async (resolvedParams) => {
       const event = getRequestEvent();
       const _pb = (isServer ? (event ? event?.locals.pb : pb) : pb) as TypedPocketBase;
       const result = (await _pb
