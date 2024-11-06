@@ -34,9 +34,13 @@ export const cacheSession = query(async () => {
 
   if (!cookie) return;
 
-  const decoded = jwtDecode(cookie) as PBPayload;
+  try {
+    const decoded = jwtDecode(cookie) as PBPayload;
 
-  return { token: cookie, payload: decoded };
+    return { token: cookie, payload: decoded };
+  } catch {
+    return;
+  }
 }, 'session');
 
 export const PocketbaseProvider: FlowComponent = (props) => {
