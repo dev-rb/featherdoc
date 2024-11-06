@@ -3,7 +3,6 @@ import { isServer } from 'solid-js/web';
 import { getCookie, setCookie } from 'vinxi/server';
 
 export type AppTheme = 'light' | 'dark';
-const [appTheme, _setAppTheme] = createSignal<AppTheme>('light');
 
 const THEME_STORAGE_KEY = 'theme';
 
@@ -32,27 +31,25 @@ const setServerCookie = (name: string, value: string) => {
 const getClientCookieTheme = () => {
   if (!document.cookie) return undefined;
   const match = document.cookie.match(new RegExp('\\W?theme=(?<value>\\w+)'));
-  return (match?.groups?.value as AppTheme) || undefined;
+  return match?.groups?.value as AppTheme;
 };
 
-export const getAppTheme = () => {
+const getInitialAppTheme = () => {
   if (isServer) {
     return getServerCookieTheme();
   }
 
-  const cookie = getClientCookieTheme() ?? themePreference();
-
-  if (appTheme() !== cookie) {
-    _setAppTheme(cookie);
-  }
-
-  return appTheme();
+  return getClientCookieTheme() ?? themePreference();
 };
+
+const [appTheme, _setAppTheme] = createSignal<AppTheme>(getInitialAppTheme());
+
+export const getAppTheme = () => appTheme();
 
 export const setAppTheme = (theme: AppTheme) => {
   localStorage.setItem(THEME_STORAGE_KEY, theme);
-  setServerCookie('theme', theme);
   document.documentElement.setAttribute('data-theme', theme);
+  setServerCookie('theme', theme);
 
   _setAppTheme(theme);
 
