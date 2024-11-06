@@ -1,5 +1,5 @@
-import { For, VoidComponent } from 'solid-js';
-import { createMutation, createRealtimeResource } from '~/lib/pocketbase';
+import { For, Show, VoidComponent } from 'solid-js';
+import { createMutation, createRealtimeResource, invalidateQuery } from '~/lib/pocketbase';
 import { ThreadsResponse, UsersResponse } from '~/types/pocketbase-gen';
 import { usePocketbase } from '../pocketbase-context';
 import { createForm } from '@felte/solid';
@@ -42,9 +42,17 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
         },
 
         callback(event, current) {
-          if (event.action === 'create') {
-            current.items.push(event.record);
-            current.totalItems += 1;
+          switch (event.action) {
+            case 'create': {
+              current.items.push(event.record);
+              current.totalItems += 1;
+              break;
+            }
+            case 'delete': {
+              current.items = current.items.filter((c) => c.id !== event.record.id);
+              current.totalItems -= 1;
+              break;
+            }
           }
         },
       },
@@ -77,8 +85,20 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
 
   form;
 
+  const deleteComment = createMutation('comments', 'delete', {
+    async onSuccess() {
+      await invalidateQuery('comments/getList');
+    },
+  });
+
+  const handleDelete = (commentId: string, authorId: string) => {
+    if (app.session().userId === authorId) {
+      deleteComment.mutate(commentId);
+    }
+  };
+
   return (
-    <div class="w-full h-full grid grid-rows-[auto_minmax(1fr,100%)_auto] grid-cols-1 gap-8">
+    <div class="w-full h-full grid grid-rows-[auto_1fr_auto] grid-cols-1 gap-8">
       <div class="w-full max-h-min flex flex-col gap-2 pt-4 pb-8 border-b-muted-foreground/50 border-b-2">
         <div class="w-full flex items-start gap-4">
           <div class="bg-blue-600/50 w-10 h-10 aspect-square rounded-full" />
@@ -113,6 +133,17 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
 
                 <div class="w-full h-max text-foreground">{comment.content}</div>
               </div>
+
+              <Show when={app.session().userId === comment.author}>
+                <Button
+                  class="ml-auto size-8"
+                  size="icon"
+                  onClick={() => handleDelete(comment.id, comment.author)}
+                  loading={deleteComment.isPending}
+                >
+                  <i class="i-lucide-trash inline-block" />
+                </Button>
+              </Show>
             </div>
           )}
         </For>
