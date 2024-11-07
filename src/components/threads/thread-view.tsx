@@ -1,4 +1,4 @@
-import { For, Show, VoidComponent } from 'solid-js';
+import { createSignal, For, Show, VoidComponent } from 'solid-js';
 import { createMutation, createRealtimeResource, invalidateQuery } from '~/lib/pocketbase';
 import { CommentsResponse, ThreadsResponse, UsersResponse } from '~/types/pocketbase-gen';
 import { usePocketbase } from '../pocketbase-context';
@@ -9,6 +9,7 @@ import { useApp } from '../app-context';
 import { TextField, TextFieldTextArea } from '../ui/TextField';
 import { Button } from '../ui/Button';
 import dayjs from 'dayjs';
+import { createScrollBottom } from '~/lib/primitives';
 
 const CreateCommentSchema = v.object({
   content: v.pipe(v.string(), v.minLength(1)),
@@ -25,6 +26,10 @@ interface ThreadViewProps extends ExpandedThread {}
 export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
   const pb = usePocketbase();
   const app = useApp();
+
+  const [containerRef, setContainerRef] = createSignal<HTMLElement>();
+
+  createScrollBottom(containerRef);
 
   const comments = createRealtimeResource(
     'comments',
@@ -118,7 +123,7 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
         </div>
       </div>
 
-      <div class="flex flex-col gap-8 h-full overflow-auto">
+      <div ref={setContainerRef} class="flex flex-col gap-8 h-full overflow-auto">
         <For
           each={comments.data()?.items}
           fallback={<div class="text-muted-foreground text-center">Be the first to reply to this post</div>}
