@@ -7,13 +7,16 @@ import { SignupForm } from './signup';
 import { usePocketbase } from '../pocketbase-context';
 import { isTokenExpired } from 'pocketbase';
 import { useApp } from '../app-context';
+import { createOnlineStatus } from '~/lib/primitives';
 
 export const AuthModal = () => {
   const app = useApp();
   const [step, setStep] = createSignal(0);
 
+  const isOnline = createOnlineStatus();
+
   return (
-    <Dialog open={!app.authed()}>
+    <Dialog open={!app.authed() && isOnline()}>
       <DialogContent>
         <Stepper step={step()} onStepChange={setStep}>
           <StepperItem>

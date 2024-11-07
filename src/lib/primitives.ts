@@ -1,4 +1,5 @@
-import { Accessor, createEffect, createMemo, onCleanup, onMount } from 'solid-js';
+import { Accessor, createEffect, createMemo, createSignal, onCleanup, onMount } from 'solid-js';
+import { isServer } from 'solid-js/web';
 
 export const createScrollBottom = (element: Accessor<HTMLElement | undefined>) => {
   const scrollBottom = () => {
@@ -45,4 +46,29 @@ export const createScrollBottom = (element: Accessor<HTMLElement | undefined>) =
   onCleanup(() => {
     observer.disconnect();
   });
+};
+
+export const createOnlineStatus = () => {
+  const initialOnline = () => {
+    if (isServer) return true;
+
+    return navigator.onLine;
+  };
+
+  const [isOnline, setOnline] = createSignal(initialOnline());
+
+  const online = () => setOnline(true);
+  const offline = () => setOnline(false);
+
+  onMount(() => {
+    window.addEventListener('online', online);
+    window.addEventListener('offiline', offline);
+
+    onCleanup(() => {
+      window.removeEventListener('online', online);
+      window.removeEventListener('offiline', offline);
+    });
+  });
+
+  return isOnline;
 };

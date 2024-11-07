@@ -5,6 +5,9 @@ export default defineConfig({
   middleware: './src/lib/middleware.ts',
   server: {
     preset: 'node-server',
+    prerender: {
+      routes: ['/', '/threads'],
+    },
   },
   vite: {
     plugins: [UnoCSS()],
