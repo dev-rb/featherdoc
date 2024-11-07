@@ -15,6 +15,7 @@ export default createHandler(() => (
         <body>
           <div id="app">{children}</div>
           {scripts}
+          <script type="module" src="/init-sw.js"></script>
         </body>
       </html>
     )}

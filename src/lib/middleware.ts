@@ -4,7 +4,7 @@ import Pocketbase from 'pocketbase';
 
 const doStuff: RequestMiddleware = async (event) => {
   const url = new URL(event.request.url);
-  if (url.pathname === '/_server') return;
+  if (url.pathname === '/_server' || url.pathname === '/service_worker.js') return;
 
   const pb = new Pocketbase('http://127.0.0.1:8090');
   event.locals.pb = pb;
