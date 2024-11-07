@@ -1,6 +1,6 @@
 import { For, Show, VoidComponent } from 'solid-js';
 import { createMutation, createRealtimeResource, invalidateQuery } from '~/lib/pocketbase';
-import { ThreadsResponse, UsersResponse } from '~/types/pocketbase-gen';
+import { CommentsResponse, ThreadsResponse, UsersResponse } from '~/types/pocketbase-gen';
 import { usePocketbase } from '../pocketbase-context';
 import { createForm } from '@felte/solid';
 import * as v from 'valibot';
@@ -70,13 +70,14 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
       const session = app.session();
 
       if (!session.userId) return;
-      console.log('Do create', values, props.id, session.userId);
 
-      await createComment.mutateAsync({
+      const result = await createComment.mutateAsync({
         thread: props.id,
         content: values.content,
         author: session.userId,
       });
+
+      return result;
     },
     onSuccess() {
       reset();

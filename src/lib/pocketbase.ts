@@ -14,7 +14,7 @@ import {
 import { usePocketbase } from '~/components/pocketbase-context';
 import { CollectionRecords, CollectionResponses, TypedPocketBase } from '~/types/pocketbase-gen';
 import { getRequestEvent, isServer } from 'solid-js/web';
-import { createStore, produce, reconcile } from 'solid-js/store';
+import { createStore, produce, reconcile, SetStoreFunction } from 'solid-js/store';
 import { createAsync, query, revalidate } from '@solidjs/router';
 
 // Modified from the amazing Tanstack Query library (MIT)
@@ -191,8 +191,9 @@ const createMutation = <Name extends QueryNames, Method extends MutationMethods>
     setIsPending(true);
     try {
       // @ts-expect-error Not sure how to fix rest param types
-      await pb.collection(name)[method](...(params as any[]));
+      const result = await pb.collection(name)[method](...(params as any[]));
       options?.onSuccess();
+      return result;
     } catch (err) {
       setError(err);
     } finally {
@@ -210,9 +211,7 @@ const createMutation = <Name extends QueryNames, Method extends MutationMethods>
     mutate: (...params: GetParams<Name, Method>): void => {
       handleAction(...params);
     },
-    mutateAsync: async (
-      ...params: GetParams<Name, Method>
-    ): Promise<Awaited<ReturnType<RecordService<CollectionRecords[Name]>[Method]>>> => {
+    mutateAsync: async (...params: GetParams<Name, Method>): Promise<GetMutationData<Name, Method>> => {
       // @ts-expect-error Not sure how to fix rest param types
       return await handleAction(...params);
     },
@@ -241,6 +240,11 @@ type InfiniteQuerySettings<TData> = {
 };
 
 type GetMethodData<Name extends QueryNames, Method extends QueryMethods> = CorrectValue<
+  NarrowReturnType<ReturnType<RecordService[Method]>>,
+  CollectionResponses[Name]
+>;
+
+type GetMutationData<Name extends QueryNames, Method extends MutationMethods> = CorrectValue<
   NarrowReturnType<ReturnType<RecordService[Method]>>,
   CollectionResponses[Name]
 >;
@@ -395,6 +399,7 @@ const createRealtimeResource = <Name extends QueryNames, Method extends QueryMet
     // @ts-expect-error TODO fix this type, I'm too lazy after dealing with the other types above
     isFetching: () => data.state === 'pending',
     refetch: s.refetch,
+    mutate: s.mutate,
   };
 };
 
