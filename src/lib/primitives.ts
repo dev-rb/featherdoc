@@ -30,7 +30,7 @@ export const createScrollBottom = (element: Accessor<HTMLElement | undefined>) =
     scrollBottom();
   };
 
-  let observer: MutationObserver;
+  let observer: MutationObserver | undefined;
   createEffect(() => {
     const ref = el();
 
@@ -44,7 +44,7 @@ export const createScrollBottom = (element: Accessor<HTMLElement | undefined>) =
   });
 
   onCleanup(() => {
-    observer.disconnect();
+    observer?.disconnect();
   });
 };
 

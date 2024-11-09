@@ -1,6 +1,7 @@
 import { Collapsible } from '@kobalte/core';
 import { useParams, useSearchParams } from '@solidjs/router';
-import { createEffect, createMemo, createSignal, For, Show, Suspense } from 'solid-js';
+import { ClientResponseError } from 'pocketbase';
+import { createEffect, createMemo, createSignal, ErrorBoundary, For, Show, Suspense } from 'solid-js';
 import { usePocketbase } from '~/components/pocketbase-context';
 import { CreateThreadForm } from '~/components/threads/create-thread';
 import { ThreadCard } from '~/components/threads/thread-card';
@@ -89,7 +90,19 @@ export default function Threads() {
         }
       >
         <article class="w-full h-full overflow-hidden bg-muted rounded-lg p-4">
-          <Show when={threadWithId.data()}>{(thread) => <ThreadView {...thread()} />}</Show>
+          <ErrorBoundary
+            fallback={(e, reset) => {
+              return (
+                <Show when={e instanceof ClientResponseError} fallback={'Failed to load custom'}>
+                  {e.message}
+                </Show>
+              );
+            }}
+          >
+            <Suspense>
+              <Show when={threadWithId.data.latest}>{(thread) => <ThreadView {...thread()} />}</Show>
+            </Suspense>
+          </ErrorBoundary>
         </article>
         {/* <div class="grid grid-cols-1 grid-rows-2 w-full h-full"> */}
         {/*   <div class="bg-background" /> */}

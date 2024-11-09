@@ -135,7 +135,7 @@ function createQuery<
 
   const options = getResourceOptions();
 
-  const data = createAsync(
+  const [data] = createResource(
     async () => {
       if (options?.enabled && !options.enabled()) return;
       setState('loading');
@@ -152,13 +152,14 @@ function createQuery<
 
       return result;
     },
-    { ...(options?.resource as any) }
+    (v) => v,
+    { ...options?.resource }
   );
 
   return {
     data: data,
     isLoading: () => {
-      return state() === 'loading';
+      return data.state === 'pending';
     },
   };
 }
