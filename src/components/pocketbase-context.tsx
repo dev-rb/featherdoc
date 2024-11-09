@@ -34,12 +34,14 @@ export const cacheSession = query(async () => {
 
   if (!cookie) return;
 
-  try {
-    const decoded = jwtDecode(cookie) as PBPayload;
+  if (!event?.locals.pb.authStore.isValid) return;
 
-    return { token: cookie, payload: decoded };
-  } catch {
-    return;
+  try {
+    const decoded = jwtDecode(event.locals.pb.authStore.token) as PBPayload;
+
+    return { token: event.locals.pb.authStore.token, payload: decoded };
+  } catch (e) {
+    throw e;
   }
 }, 'session');
 
@@ -60,7 +62,7 @@ export const PocketbaseProvider: FlowComponent = (props) => {
 
     if (!data) return;
 
-    pb.authStore.loadFromCookie(data.token);
+    pb.authStore.save(data.token);
   });
 
   return <PocketbaseContext.Provider value={pb}>{props.children}</PocketbaseContext.Provider>;
