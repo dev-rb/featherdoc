@@ -12,7 +12,6 @@ type DivProps = JSX.HTMLAttributes<HTMLDivElement>;
 interface RichEditorProps extends Omit<DivProps, 'onInput'> {
   onInput?: (text: string) => void;
   contents?: string;
-  setClearFn?: (fn: (() => void) | undefined) => void;
   wrapperClass?: string;
   editable?: boolean;
   onClickOutside?: () => void;
@@ -97,9 +96,7 @@ export const RichEditor = (props: RichEditorProps) => {
             },
           },
           heading: {
-            HTMLAttributes: {
-              class: 'my-2',
-            },
+            HTMLAttributes: {},
           },
           horizontalRule: false,
         }),
@@ -118,8 +115,9 @@ export const RichEditor = (props: RichEditorProps) => {
             return 'Make a note...';
           },
           emptyEditorClass:
-            'first:before:(content-[attr(data-placeholder)] mix-blend-difference absolute text-neutral-200 top-0 left-0)',
-          emptyNodeClass: 'before:(content-[attr(data-placeholder)] mix-blend-difference absolute text-neutral-200)',
+            'first:before:(content-[attr(data-placeholder)] mix-blend-difference absolute text-muted-foreground/50 top-0 left-0)',
+          emptyNodeClass:
+            'before:(content-[attr(data-placeholder)] mix-blend-difference absolute text-muted-foreground/50)',
         }),
         ListKeymap,
         CustomHorizontalRule,
@@ -139,8 +137,6 @@ export const RichEditor = (props: RichEditorProps) => {
     const editorElement = input.querySelector('.tiptap') as HTMLElement;
 
     setEditorRef(editorElement);
-
-    props.setClearFn?.(() => editor?.commands.clearContent());
   });
 
   const setRef = (el: HTMLDivElement) => {

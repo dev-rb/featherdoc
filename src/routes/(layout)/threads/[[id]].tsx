@@ -42,28 +42,28 @@ export default function Threads() {
 
   return (
     <main class="w-full h-full grid grid-cols-[auto_1fr_auto] overflow-hidden">
-      <aside class="flex flex-col bg-muted min-w-md max-w-md overflow-hidden pt-4">
+      <aside class="flex flex-col bg-muted min-w-md max-w-md overflow-hidden pt-4 border-r-1 border-r-secondary">
         <div class="w-full p-2 flex flex-col gap-2">
           <Collapsible.Root class="flex flex-col gap-2 w-full ui-expanded:bg-muted-foreground/20 p-2 rounded-lg">
-            <Collapsible.Trigger
-              as={Button}
-              size="sm"
-              class="group w-fit ui-expanded:(p-0 aspect-square rounded-full) self-end gap-2 transition-all"
-            >
-              <i class="group-data-[expanded]:i-lucide-x i-lucide-message-square inline-block text-lg" />
-              <span class="group-data-[expanded]:hidden">New Thread</span>
-            </Collapsible.Trigger>
+            <div class="flex items-center justify-center gap-4">
+              <TextField class="flex-1">
+                <TextFieldInput class="bg-muted-foreground/50" type="search" placeholder="Search threads..." />
+              </TextField>
+              <Collapsible.Trigger
+                as={Button}
+                size="sm"
+                class="group w-fit h-full ui-expanded:(p-0 aspect-square rounded-full) self-end gap-2 transition-all"
+              >
+                <i class="group-data-[expanded]:i-lucide-x i-lucide-message-square inline-block text-lg" />
+                <span class="group-data-[expanded]:hidden">New Thread</span>
+              </Collapsible.Trigger>
+            </div>
             <Collapsible.Content>
               <CreateThreadForm />
             </Collapsible.Content>
           </Collapsible.Root>
-
-          <TextField>
-            <TextFieldInput class="bg-muted-foreground/50" type="search" placeholder="Search threads..." />
-          </TextField>
-          <div class="text-white">{threads.isLoading() ? 'LOADING DATA' : 'NOT LOADING'}</div>
         </div>
-        <div class="w-full h-full custom-v-scrollbar pb-4 px-2 flex flex-col gap-2 overflow-auto">
+        <div class="w-full h-full custom-v-scrollbar pb-4 flex flex-col overflow-auto">
           <Suspense>
             <For each={threads.data()?.items} fallback={<div>No threads available</div>}>
               {(thread) => (

@@ -2,7 +2,7 @@ import { AuthModal } from '~/components/auth/auth-modal';
 
 export default function Home() {
   return (
-    <main class="w-full h-full grid grid-cols-12 grid-rows-12 bg-secondary">
+    <main class="w-full h-full grid grid-cols-12 grid-rows-12 bg-background">
       <AuthModal />
       <div class="w-full h-full col-start-2 row-start-2 col-end-6 row-end-6 rounded-md border-1 border-neutral-600"></div>
 

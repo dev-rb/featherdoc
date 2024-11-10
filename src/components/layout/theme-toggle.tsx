@@ -6,7 +6,7 @@ export const ThemeToggle = () => {
   return (
     <ToggleButton
       size="icon"
-      class="text-2xl hover:bg-secondary"
+      class="w-full py-8 rounded-none text-2xl hover:bg-secondary"
       pressed={getAppTheme() === 'light'}
       onChange={() => {
         const current = getAppTheme();
