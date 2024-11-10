@@ -59,7 +59,9 @@ type GetParams<Name extends QueryNames, Method extends QueryMethods | MutationMe
 
 type ToAccessors<T> = { [K in keyof T]: Accessor<T[K]> };
 
-type QueryOptions = Pick<ResourceOptions<unknown>, 'initialValue' | 'deferStream'> & { enabled?: Accessor<boolean> };
+type QueryOptions<InitialValue = unknown> = Pick<ResourceOptions<InitialValue>, 'initialValue' | 'deferStream'> & {
+  enabled?: Accessor<boolean>;
+};
 
 type NarrowReturnType<T> = T extends Promise<infer A> ? A : T extends Promise<ListResult<infer B>> ? B : T;
 
@@ -90,7 +92,7 @@ function createQuery<
   name: Name,
   method: Method,
   params: (w: ParamsHelper<Name, Method>) => GetParams<Name, Method>,
-  queryOptions?: QueryOptions
+  queryOptions?: QueryOptions<GetMethodData<Name, Method, Expand>>
 ) {
   const pb = usePocketbase();
   const resolvedParams = createMemo(() => {
@@ -114,9 +116,7 @@ function createQuery<
       const result = (await _pb
         .collection<CollectionRecords[Name]>(name)
         // @ts-expect-error no clue how to type this
-        [method]<CollectionResponses<Expand>[Name]>(...p)) as Awaited<
-        CorrectValue<NarrowReturnType<ReturnType<RecordService[Method]>>, CollectionResponses<Expand>[Name]>
-      >;
+        [method]<CollectionResponses<Expand>[Name]>(...p)) as Awaited<GetMethodData<Name, Method, Expand>>;
       return result;
     }, `${name}/${method}`);
 
@@ -152,7 +152,7 @@ function createQuery<
 
       return result;
     },
-    (v) => v,
+    (v) => v as unknown as GetMethodData<Name, Method, Expand> | undefined,
     { ...options?.resource }
   );
 
@@ -240,9 +240,9 @@ type InfiniteQuerySettings<TData> = {
   hasPrevPage: (data: TData | undefined) => boolean;
 };
 
-type GetMethodData<Name extends QueryNames, Method extends QueryMethods> = CorrectValue<
+type GetMethodData<Name extends QueryNames, Method extends QueryMethods, Expand = unknown> = CorrectValue<
   NarrowReturnType<ReturnType<RecordService[Method]>>,
-  CollectionResponses[Name]
+  CollectionResponses<Expand>[Name]
 >;
 
 type GetMutationData<Name extends QueryNames, Method extends MutationMethods> = CorrectValue<
