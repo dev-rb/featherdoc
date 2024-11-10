@@ -1,5 +1,5 @@
 import { defineConfig } from 'unocss/vite';
-import { presetUno } from 'unocss';
+import { presetUno, transformerDirectives } from 'unocss';
 import presetIcons from '@unocss/preset-icons';
 import { presetKobalte } from 'unocss-preset-primitives';
 import transformVariantGroup from '@unocss/transformer-variant-group';
@@ -107,5 +107,5 @@ export default defineConfig({
     }),
     presetKobalte({}),
   ],
-  transformers: [transformVariantGroup()],
+  transformers: [transformVariantGroup(), transformerDirectives()],
 });

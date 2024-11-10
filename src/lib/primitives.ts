@@ -72,3 +72,35 @@ export const createOnlineStatus = () => {
 
   return isOnline;
 };
+
+interface ClickOutsideOptions {
+  ref: () => HTMLElement | null | undefined;
+  callbackFn: (event: PointerEvent) => void;
+  ignore?: Accessor<(string | (HTMLElement | undefined))[]>;
+}
+
+export const makeClickOutside = (props: ClickOutsideOptions) => {
+  onMount(() => {
+    const listener = (event: PointerEvent) => {
+      const target = event.target as HTMLElement;
+      const shouldIgnore =
+        !document.body.contains(target) ||
+        (props.ignore !== undefined &&
+          props.ignore().some((s) => {
+            if (!s) return;
+            if (s instanceof HTMLElement) {
+              return target.isSameNode(s);
+            }
+
+            return target.className.toString().includes(s);
+          }));
+      const shouldTrigger = props.ref() !== undefined && !props.ref()!.contains(target);
+      shouldTrigger && !shouldIgnore && props.callbackFn(event);
+    };
+
+    document.addEventListener('pointerdown', listener);
+    onCleanup(() => {
+      document.removeEventListener('pointerdown', listener);
+    });
+  });
+};
