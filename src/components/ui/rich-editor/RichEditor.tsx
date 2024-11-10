@@ -5,7 +5,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import ListKeymap from '@tiptap/extension-list-keymap';
 import { CustomHorizontalRule } from './horizontal-rule';
 import { makeClickOutside } from '~/lib/primitives';
-import './local.css';
+import './editor.css';
 
 type DivProps = JSX.HTMLAttributes<HTMLDivElement>;
 
@@ -98,7 +98,7 @@ export const RichEditor = (props: RichEditorProps) => {
           },
           heading: {
             HTMLAttributes: {
-              class: 'my-2 leading-[1.2]',
+              class: 'my-2',
             },
           },
           horizontalRule: false,
