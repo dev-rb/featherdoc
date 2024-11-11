@@ -93,7 +93,13 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
 
   const deleteThread = createMutation('threads', 'delete', {
     async onSuccess() {
-      await invalidateQuery('threads/getList');
+      await Promise.all([invalidateQuery('threads/getList'), invalidateQuery('threads/getOne')]);
+    },
+  });
+
+  const updateThread = createMutation('threads', 'update', {
+    async onSuccess() {
+      await Promise.all([invalidateQuery('threads/getList'), invalidateQuery('threads/getOne')]);
     },
   });
 
@@ -112,6 +118,12 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
   const handleDeleteThread = () => {
     if (app.session().userId === props.author) {
       deleteThread.mutate(props.id);
+    }
+  };
+
+  const handleResolvedToggle = () => {
+    if (app.session().userId === props.author) {
+      updateThread.mutate(props.id, { resolved: !props.resolved });
     }
   };
 
@@ -145,6 +157,8 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
             variant={props.resolved ? 'default' : 'secondary'}
             class="flex items-center gap-2 h-8"
             disabled={app.session().userId !== props.author}
+            loading={updateThread.isPending}
+            onClick={handleResolvedToggle}
           >
             <i class="i-lucide-check inline-block" />
             Mark as {props.resolved ? 'Unresolved' : 'Resolved'}

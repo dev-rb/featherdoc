@@ -54,7 +54,7 @@ export const CreateThreadForm: ParentComponent = (props) => {
       </TextField>
 
       <Button
-        class="gap-2 w-fit self-end mt-5"
+        class="gap-2 w-fit self-end"
         type="submit"
         disabled={!isDirty() || isSubmitting()}
         loading={isSubmitting()}

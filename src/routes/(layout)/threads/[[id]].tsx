@@ -47,7 +47,7 @@ export default function Threads() {
     <main class="w-full h-full grid grid-cols-[auto_1fr_auto] overflow-hidden">
       <aside class="flex flex-col bg-muted min-w-md max-w-md overflow-hidden pt-4 border-r-1 border-r-secondary">
         <div class="w-full p-2 flex flex-col gap-2">
-          <Collapsible.Root class="flex flex-col gap-2 w-full ui-expanded:bg-muted-foreground/20 p-2 rounded-lg">
+          <Collapsible.Root class="flex flex-col gap-2 w-full p-2 rounded-lg">
             <div class="flex items-center justify-center gap-4">
               <TextField class="flex-1">
                 <TextFieldInput class="bg-muted-foreground/50" type="search" placeholder="Search threads..." />
@@ -55,7 +55,7 @@ export default function Threads() {
               <Collapsible.Trigger
                 as={Button}
                 size="sm"
-                class="group w-fit h-full ui-expanded:(p-0 aspect-square rounded-full) self-end gap-2 transition-all"
+                class="group w-fit h-full ui-expanded:(p-0 aspect-square rounded-full) ui-closed:self-end gap-2 transition-all"
               >
                 <i class="group-data-[expanded]:i-lucide-x i-lucide-message-square inline-block text-lg" />
                 <span class="group-data-[expanded]:hidden">New Thread</span>
@@ -87,7 +87,7 @@ export default function Threads() {
       <Show
         when={params.id !== undefined}
         fallback={
-          <div class="w-full h-full flex-center flex-col gap-2 text-muted-foreground">
+          <div class="w-full h-full flex-center flex-col gap-4 text-primary text-xl">
             ＼（〇_ｏ）／
             <span>No thread loaded</span>
           </div>
@@ -95,11 +95,20 @@ export default function Threads() {
       >
         <article class="w-full h-full overflow-hidden bg-muted rounded-lg p-4">
           <ErrorBoundary
-            fallback={(e, reset) => {
+            fallback={(e) => {
+              const isNotFoundError = createMemo(() => {
+                if (e instanceof ClientResponseError) {
+                  return e.status === 404;
+                }
+                return false;
+              });
               return (
-                <Show when={e instanceof ClientResponseError} fallback={'Failed to load custom'}>
-                  {e.message}
-                </Show>
+                <div class="flex flex-col gap-4 w-full h-full items-center justify-center text-primary text-xl">
+                  <span class="font-bold">ಥ_ಥ</span>
+                  <Show when={isNotFoundError()} fallback={'Failed to load custom'}>
+                    Thread not found
+                  </Show>
+                </div>
               );
             }}
           >
