@@ -1,6 +1,7 @@
 import { ListResult, RecordOptions, RecordService, RecordSubscription, SendOptions } from 'pocketbase';
 import {
   Accessor,
+  createEffect,
   createMemo,
   createResource,
   createSignal,
@@ -16,6 +17,7 @@ import { CollectionRecords, CollectionResponses, TypedPocketBase } from '~/types
 import { getRequestEvent, isServer } from 'solid-js/web';
 import { createStore, produce, reconcile, SetStoreFunction } from 'solid-js/store';
 import { createAsync, query, revalidate } from '@solidjs/router';
+import { createOnlineStatus } from './primitives';
 
 // Modified from the amazing Tanstack Query library (MIT)
 // https://github.com/TanStack/query/blob/main/packages/query-core/src/utils.ts#L168
@@ -320,6 +322,7 @@ const createRealtimeResource = <Name extends QueryNames, Method extends QueryMet
   }
 ) => {
   const pb = usePocketbase();
+  const isOnline = createOnlineStatus();
 
   const [store, setStore] = createStore<{
     value: Awaited<GetMethodData<Name, Method>>;
@@ -371,8 +374,26 @@ const createRealtimeResource = <Name extends QueryNames, Method extends QueryMet
     }
   );
 
+  const [isConnected, setIsConnected] = createSignal(false);
+
+  onMount(() => {
+    pb.realtime.subscribe('PB_CONNECT', (data) => {
+      if ('clientId' in data) {
+        setIsConnected(true);
+      }
+    });
+
+    onCleanup(() => {
+      setIsConnected(false);
+      pb.realtime.unsubscribe('PB_CONNECT');
+    });
+  });
+
   let unsub = () => {};
-  onMount(async () => {
+  createEffect(async () => {
+    if (!isOnline()) {
+      return;
+    }
     unsub = await pb.collection(name).subscribe(
       settings?.realtime?.recordId ?? '*',
       (data: RecordSubscription<CollectionResponses[Name]>) => {
@@ -397,6 +418,7 @@ const createRealtimeResource = <Name extends QueryNames, Method extends QueryMet
     },
     isLoading: () => data.loading,
     isRefreshing: () => data.state === 'refreshing',
+    isConnected: () => isOnline() && isConnected(),
     // @ts-expect-error TODO fix this type, I'm too lazy after dealing with the other types above
     isFetching: () => data.state === 'pending',
     refetch: s.refetch,
