@@ -137,9 +137,17 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
             <i class="i-lucide-edit inline-block" />
           </Button>
 
-          <Button variant="secondary" class="flex items-center gap-2 h-8">
+          <Button variant="outline" size="icon" class="size-8">
             <i class="i-lucide-plus inline-block" />
-            New Asset
+          </Button>
+
+          <Button
+            variant={props.resolved ? 'default' : 'secondary'}
+            class="flex items-center gap-2 h-8"
+            disabled={app.session().userId !== props.author}
+          >
+            <i class="i-lucide-check inline-block" />
+            Mark as {props.resolved ? 'Unresolved' : 'Resolved'}
           </Button>
         </div>
       </div>

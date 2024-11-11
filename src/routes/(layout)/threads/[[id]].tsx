@@ -27,10 +27,13 @@ export default function Threads() {
     return page;
   });
 
-  const threads = createQuery<{ author: UsersResponse }, 'threads', 'getList'>('threads', 'getList', (s) =>
-    s(currentPage(), 50, {
-      expand: 'author',
-    })
+  const threads = createQuery<{ author: UsersResponse; comments_via_thread: CommentsResponse[] }, 'threads', 'getList'>(
+    'threads',
+    'getList',
+    (s) =>
+      s(currentPage(), 50, {
+        expand: 'author,comments_via_thread',
+      })
   );
 
   const threadWithId = createQuery<{ author: UsersResponse }, 'threads', 'getOne'>(
@@ -73,7 +76,7 @@ export default function Threads() {
                   title={thread.title}
                   resolved={thread.resolved}
                   timestamp={thread.created}
-                  totalReplies={0}
+                  totalReplies={thread.expand?.comments_via_thread.length ?? 0}
                 />
               )}
             </For>
