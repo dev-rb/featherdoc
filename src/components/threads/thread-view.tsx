@@ -213,7 +213,7 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
           </div>
         </div>
 
-        <div class="flex flex-col gap-8 h-min py-4">
+        <div class="flex flex-col gap-8 w-full h-min py-4">
           <For
             each={comments.data()?.items}
             fallback={<div class="text-muted-foreground text-center">Be the first to reply to this thread</div>}
@@ -221,13 +221,38 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
             {(comment) => (
               <div class="group w-full flex items-start gap-4">
                 <div class="bg-blue-600/50 w-10 h-10 aspect-square rounded-full"></div>
-                <div class="flex flex-col gap-2">
+                <div class="w-full flex flex-col gap-2">
                   <div class="flex items-center gap-2">
                     <span class="text-foreground/70 text-xs">{comment.author}</span>
                     <span class="text-xs text-foreground/50">{dayjs(comment.created).fromNow()}</span>
                   </div>
 
-                  <div class="w-full h-max text-foreground/70">{comment.content}</div>
+                  <div class="w-full flex flex-col gap-4 h-max text-foreground/70">
+                    <p>{comment.content}</p>
+                    <Show
+                      when={comment.attachments.length > 1}
+                      fallback={
+                        <Show when={comment.attachments.length === 1}>
+                          <div class="w-fit bg-secondary cursor-zoom-in rounded-lg">
+                            <img
+                              class="size-28 object-cover rounded-lg"
+                              src={pb.files.getUrl(comment, comment.attachments[0])}
+                            />
+                          </div>
+                        </Show>
+                      }
+                    >
+                      <div class="w-full flex flex-wrap gap-2">
+                        <For each={comment.attachments}>
+                          {(attachment) => (
+                            <div class="w-fit bg-secondary rounded-lg cursor-zoom-in">
+                              <img class="size-28 object-cover rounded-lg" src={pb.files.getUrl(comment, attachment)} />
+                            </div>
+                          )}
+                        </For>
+                      </div>
+                    </Show>
+                  </div>
                 </div>
 
                 <Show when={app.session().userId === comment.author}>
