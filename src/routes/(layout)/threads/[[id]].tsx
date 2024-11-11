@@ -73,6 +73,7 @@ export default function Threads() {
                 <ThreadCard
                   id={thread.id}
                   author={thread.expand!.author}
+                  description={thread.content}
                   title={thread.title}
                   resolved={thread.resolved}
                   timestamp={thread.created}
