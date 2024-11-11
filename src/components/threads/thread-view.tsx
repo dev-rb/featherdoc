@@ -14,6 +14,7 @@ import { cn } from '~/lib/utils';
 
 const CreateCommentSchema = v.object({
   content: v.pipe(v.string(), v.minLength(1)),
+  attachments: v.optional(v.array(v.file())),
 });
 
 type CreateCommentValues = v.InferInput<typeof CreateCommentSchema>;
@@ -30,6 +31,7 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
   const pb = usePocketbase();
   const app = useApp();
 
+  const [fileUploadRef, setFileUploadRef] = createSignal<HTMLInputElement>();
   const [containerRef, setContainerRef] = createSignal<HTMLElement>();
 
   createScrollBottom(containerRef);
@@ -69,7 +71,7 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
 
   const createComment = createMutation('comments', 'create');
 
-  const { form, data, reset } = createForm<CreateCommentValues>({
+  const { form, data, reset, setFields } = createForm<CreateCommentValues>({
     initialValues: {
       content: '',
     },
@@ -79,11 +81,17 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
 
       if (!session.userId) return;
 
-      const result = await createComment.mutateAsync({
-        thread: props.id,
-        content: values.content,
-        author: session.userId,
-      });
+      const formData = new FormData();
+
+      for (const file of values.attachments ?? []) {
+        formData.append('attachments', file);
+      }
+
+      formData.set('thread', props.id);
+      formData.set('content', values.content);
+      formData.set('author', session.userId);
+
+      const result = await createComment.mutateAsync(formData);
 
       return result;
     },
@@ -239,22 +247,61 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
         </div>
       </div>
 
-      <form
-        use:form
-        class="row-start-4 w-full flex gap-2 justify-between p-2 bg-foreground/10 focus-within:(ring ring-ring) rounded-md"
-      >
-        <TextField name="content" class="h-fit flex-1 text-foreground rounded-0" value={data().content}>
-          <TextFieldTextArea
-            class="min-h-[1.5rem] p-0 resize-none bg-transparent rounded-0 border-none text-base focus-visible:ring-none max-h-xs"
-            autoResize
-            placeholder="Send a message..."
-            submitOnEnter={true}
-          />
-        </TextField>
-        <Button type="submit" size="icon" class="h-full max-h-12 text-xl">
-          <i class="i-lucide-send-horizontal inline-block" />
-        </Button>
-      </form>
+      <div class="row-start-4 w-full flex flex-col gap-4">
+        <div class="w-full flex gap-4">
+          <For each={data('attachments')}>
+            {(file) => (
+              <Show when={file.type}>
+                <div class="relative w-max h-max">
+                  <img class="size-24 object-cover rounded-lg" src={URL.createObjectURL(file)} />
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    class="size-6 absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2"
+                    onClick={() => {
+                      setFields(
+                        'attachments',
+                        data('attachments')?.filter((f) => f !== file)
+                      );
+                    }}
+                  >
+                    <i class="i-lucide-x inline-block" />
+                  </Button>
+                </div>
+              </Show>
+            )}
+          </For>
+        </div>
+        <form
+          use:form
+          class="row-start-4 w-full flex gap-2 justify-between p-2 bg-foreground/10 focus-within:(ring ring-ring) rounded-md"
+        >
+          <TextField name="content" class="h-fit flex-1 text-foreground rounded-0" value={data().content}>
+            <TextFieldTextArea
+              class="min-h-[1.5rem] p-0 resize-none bg-transparent rounded-0 border-none text-base focus-visible:ring-none max-h-xs"
+              autoResize
+              placeholder="Send a message..."
+              submitOnEnter={true}
+            />
+          </TextField>
+
+          <Button
+            as={'div'}
+            variant="ghost"
+            size="icon"
+            class="h-full max-h-12 text-muted-foreground hover:(bg-secondary text-primary) text-xl"
+            onClick={() => {
+              fileUploadRef()?.click();
+            }}
+          >
+            <input ref={setFileUploadRef} type="file" name="attachments" class="text-0 size-0" multiple />
+            <i class="i-lucide-image-plus inline-block" />
+          </Button>
+          <Button type="submit" size="icon" class="h-full max-h-12 text-xl" disabled={data().content.length === 0}>
+            <i class="i-lucide-send-horizontal inline-block" />
+          </Button>
+        </form>
+      </div>
     </div>
   );
 };

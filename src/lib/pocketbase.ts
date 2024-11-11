@@ -52,9 +52,9 @@ type AccessorEligible = 'getList' | 'getOne' | 'getFirstListItem';
 type QueryNames = keyof CollectionRecords;
 
 type GetParams<Name extends QueryNames, Method extends QueryMethods | MutationMethods> = Method extends 'create'
-  ? [values: CollectionRecords[Name], options?: RecordOptions]
+  ? [values: CollectionRecords[Name] | FormData, options?: RecordOptions]
   : Method extends 'update'
-    ? [id: string, values: Partial<CollectionRecords[Name]>, options?: RecordOptions]
+    ? [id: string, values: Partial<CollectionRecords[Name]> | FormData, options?: RecordOptions]
     : Name extends keyof CollectionResponses
       ? Parameters<RecordService<CollectionRecords[Name]>[Method]>
       : never;
