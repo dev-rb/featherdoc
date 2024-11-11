@@ -374,17 +374,19 @@ const createRealtimeResource = <Name extends QueryNames, Method extends QueryMet
     }
   );
 
-  const [isConnected, setIsConnected] = createSignal(false);
+  const [connectionStatus, setConnectionStatus] = createSignal<'disconnected' | 'connecting' | 'connected'>(
+    'connecting'
+  );
 
   onMount(() => {
+    setConnectionStatus('connecting');
     pb.realtime.subscribe('PB_CONNECT', (data) => {
-      if ('clientId' in data) {
-        setIsConnected(true);
+      if ('clientId' in data && data.clientId !== undefined) {
+        setConnectionStatus('connected');
       }
     });
-
     onCleanup(() => {
-      setIsConnected(false);
+      setConnectionStatus('disconnected');
       pb.realtime.unsubscribe('PB_CONNECT');
     });
   });
@@ -418,7 +420,7 @@ const createRealtimeResource = <Name extends QueryNames, Method extends QueryMet
     },
     isLoading: () => data.loading,
     isRefreshing: () => data.state === 'refreshing',
-    isConnected: () => isOnline() && isConnected(),
+    connectionStatus: () => (isOnline() ? connectionStatus() : 'disconnected'),
     // @ts-expect-error TODO fix this type, I'm too lazy after dealing with the other types above
     isFetching: () => data.state === 'pending',
     refetch: s.refetch,

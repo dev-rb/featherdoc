@@ -1,4 +1,4 @@
-import { createSignal, For, Show, VoidComponent } from 'solid-js';
+import { createEffect, createSignal, For, Match, Show, Switch, VoidComponent } from 'solid-js';
 import { createMutation, createRealtimeResource, invalidateQuery } from '~/lib/pocketbase';
 import { ThreadsResponse, UsersResponse } from '~/types/pocketbase-gen';
 import { usePocketbase } from '../pocketbase-context';
@@ -128,12 +128,30 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
     }
   };
 
+  createEffect(() => {
+    console.log(comments.connectionStatus());
+  });
+
   return (
     <div class="w-full h-full grid grid-rows-[auto_auto_1fr_auto] grid-cols-1 gap-4">
       <div class="w-full flex items-center">
         <div class="flex items-center gap-2 px-2 py-1 rounded-full bg-secondary text-foreground text-sm">
-          <div class={cn('bg-primary size-4 rounded-full', !comments.isConnected() && 'bg-destructive')} />
-          {comments.isConnected() ? 'Connected' : 'No connection'}
+          <Switch>
+            <Match when={comments.connectionStatus() === 'connecting'}>
+              <i class="i-svg-spinners-pulse-2 inline-block text-xl text-primary" />
+            </Match>
+            <Match when={comments.connectionStatus() === 'connected'}>
+              <div class={'bg-primary size-4 rounded-full'} />
+            </Match>
+            <Match when={comments.connectionStatus() === 'disconnected'}>
+              <div class={'bg-destructive size-4 rounded-full'} />
+            </Match>
+          </Switch>
+          {comments.connectionStatus() === 'connected'
+            ? 'Connected'
+            : comments.connectionStatus() === 'connecting'
+              ? 'Connecting...'
+              : 'No connection'}
         </div>
         <div class="ml-auto flex items-center gap-2">
           <Button

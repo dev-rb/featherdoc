@@ -27,7 +27,7 @@ export const ThreadCard: VoidComponent<ThreadCardProps> = (props) => {
     <Card
       class={cn(
         'select-none bg-transparent border-y-1 border-y-secondary border-x-0 rounded-none',
-        isActive() ? 'bg-primary-foreground/20' : 'hover:bg-secondary'
+        isActive() ? 'bg-primary/20 border-y-primary' : 'hover:bg-secondary'
       )}
     >
       <A href={`/threads/${props.id}`}>
