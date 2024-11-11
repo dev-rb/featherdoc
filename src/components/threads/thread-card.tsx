@@ -54,7 +54,8 @@ export const ThreadCard: VoidComponent<ThreadCardProps> = (props) => {
         <div
           class={cn(
             'w-6 h-6 flex-center text-foreground/50 bg-foreground/10 rounded-md',
-            isActive() && 'bg-primary/10 text-primary/90'
+            isActive() && 'bg-primary/10 text-primary/90',
+            props.resolved && 'bg-blue-600 text-blue-100'
           )}
         >
           <i class="i-lucide-check inline-block" />
