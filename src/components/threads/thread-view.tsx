@@ -128,10 +128,6 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
     }
   };
 
-  createEffect(() => {
-    console.log(comments.connectionStatus());
-  });
-
   return (
     <div class="w-full h-full grid grid-rows-[auto_auto_1fr_auto] grid-cols-1 gap-4">
       <div class="w-full flex items-center">
