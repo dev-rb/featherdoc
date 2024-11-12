@@ -52,3 +52,27 @@ export const isDefined = <T>(v: T | undefined): v is T => {
 export const isNull = <T>(v: T | null): v is null => {
   return v === null;
 };
+
+type FileType = 'image' | 'video' | 'other';
+
+export const getFileType = <T extends File | string, R extends T extends File ? FileType : Promise<FileType>>(
+  file: T
+): R => {
+  if (typeof file !== 'string') {
+    const type = file.type.split('/')[0];
+
+    if (type !== 'image' && type !== 'video') {
+      return 'other' as R;
+    }
+
+    return type as R;
+  }
+
+  try {
+    const blob = fetch(file).then((r) => r.blob());
+
+    return blob.then((b) => getFileType(new File([b], file))) as R;
+  } catch {
+    return 'other' as R;
+  }
+};
