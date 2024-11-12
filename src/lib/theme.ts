@@ -36,7 +36,7 @@ const getClientCookieTheme = () => {
 
 const getInitialAppTheme = () => {
   if (isServer) {
-    return getServerCookieTheme();
+    return 'dark';
   }
 
   return getClientCookieTheme() ?? themePreference();

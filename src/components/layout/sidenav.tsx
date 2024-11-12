@@ -69,9 +69,9 @@ const Navigation = () => {
           <NavLink href="/threads" iconClass="i-lucide-message-square" label="Threads" end={false} />
         </li>
         <ul class="w-full mt-auto flex flex-col">
-          <li class="w-full">
-            <ThemeToggle />
-          </li>
+          {/* <li class="w-full"> */}
+          {/*   <ThemeToggle /> */}
+          {/* </li> */}
           <li class="w-full">
             <NavLink href="/settings" iconClass="i-lucide-settings" label="Settings" />
           </li>
