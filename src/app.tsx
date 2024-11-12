@@ -2,6 +2,7 @@ import '@unocss/reset/tailwind.css';
 import 'virtual:uno.css';
 import './app.css';
 
+import { MetaProvider, Meta, Title } from '@solidjs/meta';
 import { Router } from '@solidjs/router';
 import { FileRoutes } from '@solidjs/start/router';
 import { Suspense } from 'solid-js';
@@ -20,11 +21,14 @@ export default function App() {
   return (
     <Router
       root={(props) => (
-        <PocketbaseProvider>
-          <AppContextProvider>
-            <Suspense>{props.children}</Suspense>
-          </AppContextProvider>
-        </PocketbaseProvider>
+        <MetaProvider>
+          <Title>Support World</Title>
+          <PocketbaseProvider>
+            <AppContextProvider>
+              <Suspense>{props.children}</Suspense>
+            </AppContextProvider>
+          </PocketbaseProvider>
+        </MetaProvider>
       )}
     >
       <FileRoutes />
