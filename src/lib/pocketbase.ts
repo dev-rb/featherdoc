@@ -183,7 +183,7 @@ export const invalidateQuery = <Name extends QueryNames, Method extends QueryMet
 const createMutation = <Name extends QueryNames, Method extends MutationMethods>(
   name: Name,
   method: Method,
-  options?: { onSuccess: () => Promise<void> | void }
+  options?: { onSuccess: (...params: GetParams<Name, Method>) => Promise<void> | void }
 ) => {
   const pb = usePocketbase();
 
@@ -195,7 +195,7 @@ const createMutation = <Name extends QueryNames, Method extends MutationMethods>
     try {
       // @ts-expect-error Not sure how to fix rest param types
       const result = await pb.collection(name)[method](...(params as any[]));
-      options?.onSuccess();
+      options?.onSuccess(...params);
       return result;
     } catch (err) {
       setError(err);
@@ -425,6 +425,9 @@ const createRealtimeResource = <Name extends QueryNames, Method extends QueryMet
     isFetching: () => data.state === 'pending',
     refetch: s.refetch,
     mutate: s.mutate,
+    fineMutate: ((...vars: any[]) => {
+      setStore('value', ...vars);
+    }) as SetStoreFunction<Awaited<GetMethodData<Name, Method>>>,
   };
 };
 

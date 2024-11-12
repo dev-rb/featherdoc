@@ -120,6 +120,24 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
     },
   });
 
+  const updateComment = createMutation('comments', 'update', {
+    async onSuccess(id, values) {
+      if (typeof values === 'object' && 'attachments-' in values) {
+        const attachmentsToRemove = values['attachments-'] as string[];
+
+        if (attachmentsToRemove && attachmentsToRemove.length) {
+          comments.fineMutate(
+            'items',
+            (p) => p.id === id,
+            'attachments',
+            (p) => p.filter((attachment) => !attachmentsToRemove.includes(attachment))
+          );
+        }
+      }
+      await invalidateQuery('comments/getList');
+    },
+  });
+
   const handleDeleteComment = (commentId: string, authorId: string) => {
     if (app.session().userId === authorId) {
       deleteComment.mutate(commentId);
@@ -136,6 +154,11 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
     if (app.session().userId === props.author) {
       updateThread.mutate(props.id, { resolved: !props.resolved });
     }
+  };
+
+  const handleRemoveAttachment = (commentId: string, authorId: string, attachment: string) => {
+    if (app.session().userId !== authorId) return;
+    updateComment.mutate(commentId, { 'attachments-': attachment });
   };
 
   return (
@@ -238,13 +261,19 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
                               class="size-28 object-cover rounded-lg"
                               src={pb.files.getUrl(comment, comment.attachments[0])}
                             />
-                            <Button
-                              variant="destructive"
-                              size="icon"
-                              class="group-hover:flex hidden size-6 absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2"
-                            >
-                              <i class="i-lucide-x inline-block" />
-                            </Button>
+                            <Show when={app.session().userId === comment.author}>
+                              <Button
+                                variant="destructive"
+                                size="icon"
+                                class="group-hover:flex hidden size-6 absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2 z-2"
+                                disabled={app.session().userId !== comment.author}
+                                onClick={() =>
+                                  handleRemoveAttachment(comment.id, comment.author, comment.attachments[0])
+                                }
+                              >
+                                <i class="i-lucide-x inline-block pointer-events-none" />
+                              </Button>
+                            </Show>
                           </div>
                         </Show>
                       }
@@ -254,13 +283,17 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
                           {(attachment) => (
                             <div class="group/image relative w-fit bg-secondary rounded-lg cursor-zoom-in">
                               <img class="size-28 object-cover rounded-lg" src={pb.files.getUrl(comment, attachment)} />
-                              <Button
-                                variant="destructive"
-                                size="icon"
-                                class="group-hover/image:flex hidden size-6 absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2"
-                              >
-                                <i class="i-lucide-x inline-block" />
-                              </Button>
+                              <Show when={app.session().userId === comment.author}>
+                                <Button
+                                  variant="destructive"
+                                  size="icon"
+                                  class="group-hover/image:flex hidden size-6 absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2"
+                                  onClick={() => handleRemoveAttachment(comment.id, comment.author, attachment)}
+                                  disabled={app.session().userId !== comment.author}
+                                >
+                                  <i class="i-lucide-x inline-block" />
+                                </Button>
+                              </Show>
                             </div>
                           )}
                         </For>
