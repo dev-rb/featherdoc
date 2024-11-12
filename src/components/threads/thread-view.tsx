@@ -252,12 +252,12 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
                       <div class="w-full flex flex-wrap gap-4">
                         <For each={comment.attachments}>
                           {(attachment) => (
-                            <div class="group relative w-fit bg-secondary rounded-lg cursor-zoom-in">
+                            <div class="group/image relative w-fit bg-secondary rounded-lg cursor-zoom-in">
                               <img class="size-28 object-cover rounded-lg" src={pb.files.getUrl(comment, attachment)} />
                               <Button
                                 variant="destructive"
                                 size="icon"
-                                class="group-hover:flex hidden size-6 absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2"
+                                class="group-hover/image:flex hidden size-6 absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2"
                               >
                                 <i class="i-lucide-x inline-block" />
                               </Button>

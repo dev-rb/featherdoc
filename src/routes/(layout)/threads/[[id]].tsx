@@ -70,7 +70,7 @@ export default function Threads() {
         </div>
         <div class="w-full h-full custom-v-scrollbar pb-4 flex flex-col overflow-auto">
           <Suspense>
-            <For each={threads.data()?.items} fallback={<div>No threads available</div>}>
+            <For each={threads.data()?.items} fallback={<div class="text-white">No threads available</div>}>
               {(thread) => (
                 <ThreadCard
                   id={thread.id}
@@ -99,7 +99,7 @@ export default function Threads() {
           <ErrorBoundary
             fallback={(e) => {
               const isNotFoundError = createMemo(() => {
-                if (e instanceof ClientResponseError) {
+                if ('status' in e) {
                   return e.status === 404;
                 }
                 return false;
