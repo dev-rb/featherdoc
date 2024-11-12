@@ -11,6 +11,8 @@ import { Button } from '../ui/Button';
 import dayjs from 'dayjs';
 import { createScrollBottom } from '~/lib/primitives';
 import { cn } from '~/lib/utils';
+import { showToast } from '../ui/Toast';
+import { useNavigate } from '@solidjs/router';
 
 const CreateCommentSchema = v.object({
   content: v.pipe(v.string(), v.minLength(1)),
@@ -30,6 +32,8 @@ interface ThreadViewProps extends ExpandedThread {
 export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
   const pb = usePocketbase();
   const app = useApp();
+
+  const navigate = useNavigate();
 
   const [fileUploadRef, setFileUploadRef] = createSignal<HTMLInputElement>();
   const [containerRef, setContainerRef] = createSignal<HTMLElement>();
@@ -105,6 +109,8 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
   const deleteThread = createMutation('threads', 'delete', {
     async onSuccess() {
       await Promise.all([invalidateQuery('threads/getList'), invalidateQuery('threads/getOne')]);
+      navigate('/threads');
+      showToast({ title: 'Thread deleted', variant: 'success' });
     },
   });
 
@@ -117,6 +123,7 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
   const deleteComment = createMutation('comments', 'delete', {
     async onSuccess() {
       await invalidateQuery('comments/getList');
+      showToast({ title: 'Comment deleted', variant: 'success' });
     },
   });
 
