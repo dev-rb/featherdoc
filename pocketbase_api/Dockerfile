@@ -18,8 +18,8 @@ RUN wget https://github.com/pocketbase/pocketbase/releases/download/v${VERSION}/
     && unzip pocketbase_${VERSION}_${BUILDX_ARCH}.zip \
     && chmod +x /pocketbase
 
-COPY pb_hooks /pb_hooks
-COPY pb_migrations /pb_migrations
+COPY pocketbase_api/pb_hooks /pb_hooks
+COPY pocketbase_api/pb_migrations /pb_migrations
 
 FROM scratch
 
