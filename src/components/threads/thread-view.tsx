@@ -14,6 +14,7 @@ import { showToast } from '../ui/Toast';
 import { useNavigate } from '@solidjs/router';
 import { ACCEPTED_FILE_TYPES } from '~/lib/constants';
 import { SimpleTooltip } from '../ui/Tooltip';
+import { AttachmentCollage } from './attachment-collage';
 
 const CreateCommentSchema = v.object({
   content: v.pipe(v.string(), v.minLength(1)),
@@ -302,24 +303,27 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
                       }
                     >
                       <div class="w-full flex flex-wrap gap-4">
-                        <For each={comment.attachments}>
-                          {(attachment) => (
-                            <div class="group/image relative w-fit bg-secondary rounded-lg cursor-zoom-in">
-                              <img class="size-28 object-cover rounded-lg" src={pb.files.getUrl(comment, attachment)} />
-                              <Show when={app.session().userId === comment.author}>
-                                <Button
-                                  variant="destructive"
-                                  size="icon"
-                                  class="group-hover/image:flex hidden size-6 absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2"
-                                  onClick={() => handleRemoveAttachment(comment.id, comment.author, attachment)}
-                                  disabled={app.session().userId !== comment.author}
-                                >
-                                  <i class="i-lucide-x inline-block" />
-                                </Button>
-                              </Show>
-                            </div>
-                          )}
-                        </For>
+                        <AttachmentCollage attachments={comment.attachments.map((a) => pb.files.getUrl(comment, a))} />
+                        {/* <For each={comment.attachments}> */}
+                        {/*   {(attachment) => ( */}
+                        {/*     <div class="group/image relative w-fit bg-secondary rounded-lg cursor-zoom-in"> */}
+                        {/*       <img class="size-28 object-cover rounded-lg" src={pb.files.getUrl(comment, attachment)} /> */}
+                        {/*       <Show when={app.session().userId === comment.author}> */}
+                        {/*         <Button */}
+                        {/*           variant="destructive" */}
+                        {/*           size="icon" */}
+                        {/*           class="group-hover/image:flex hidden size-6 absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2" */}
+                        {/*           onClick={() => handleRemoveAttachment(comment.id, comment.author, attachment)} */}
+                        {/*           disabled={app.session().userId !== comment.author} */}
+                        {/*         > */}
+                        {/*           <SimpleTooltip content="Remove attachment"> */}
+                        {/*             <i class="i-lucide-x inline-block pointer-events-none" /> */}
+                        {/*           </SimpleTooltip> */}
+                        {/*         </Button> */}
+                        {/*       </Show> */}
+                        {/*     </div> */}
+                        {/*   )} */}
+                        {/* </For> */}
                       </div>
                     </Show>
                   </div>
