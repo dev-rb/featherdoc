@@ -12,6 +12,7 @@ import dayjs from 'dayjs';
 import { createScrollBottom } from '~/lib/primitives';
 import { showToast } from '../ui/Toast';
 import { useNavigate } from '@solidjs/router';
+import { ACCEPTED_FILE_TYPES } from '~/lib/constants';
 
 const CreateCommentSchema = v.object({
   content: v.pipe(v.string(), v.minLength(1)),
@@ -382,6 +383,7 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
               type="file"
               class="text-0 size-0"
               multiple
+              accept={ACCEPTED_FILE_TYPES.join(',')}
               onChange={(e) => {
                 const files = e.currentTarget.files;
 
