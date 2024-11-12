@@ -4,8 +4,6 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Stepper, StepperItem } from '../ui/Stepper';
 import { LoginForm } from './login';
 import { SignupForm } from './signup';
-import { usePocketbase } from '../pocketbase-context';
-import { isTokenExpired } from 'pocketbase';
 import { useApp } from '../app-context';
 import { createOnlineStatus } from '~/lib/primitives';
 
@@ -24,18 +22,22 @@ export const AuthModal = () => {
               <DialogTitle class="text-center">Login</DialogTitle>
             </DialogHeader>
             <LoginForm>
-              <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setStep(1);
-                  }}
-                >
-                  Sign up
-                </Button>
-                <Button type="submit">Login</Button>
-              </DialogFooter>
+              {(state) => (
+                <DialogFooter>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setStep(1);
+                    }}
+                  >
+                    Sign up
+                  </Button>
+                  <Button type="submit" loading={state.pending()} disabled={state.pending()}>
+                    Login
+                  </Button>
+                </DialogFooter>
+              )}
             </LoginForm>
           </StepperItem>
           <StepperItem>
@@ -54,9 +56,13 @@ export const AuthModal = () => {
               <DialogTitle class="text-center self-center">Sign up</DialogTitle>
             </DialogHeader>
             <SignupForm>
-              <DialogFooter>
-                <Button type="submit">Sign up</Button>
-              </DialogFooter>
+              {(state) => (
+                <DialogFooter>
+                  <Button type="submit" loading={state.pending()} disabled={state.pending()}>
+                    Sign up
+                  </Button>
+                </DialogFooter>
+              )}
             </SignupForm>
           </StepperItem>
         </Stepper>

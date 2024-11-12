@@ -2,7 +2,7 @@ import { createForm } from '@felte/solid';
 import { TextField, TextFieldErrorMessage, TextFieldInput, TextFieldLabel } from '../ui/TextField';
 import * as v from 'valibot';
 import { validator } from '~/lib/felte';
-import { FlowComponent } from 'solid-js';
+import { children, Component, JSX } from 'solid-js';
 import { TypedPocketBase } from '~/types/pocketbase-gen';
 import Pocketbase from 'pocketbase';
 import { createAppSession } from '~/lib/session';
@@ -35,8 +35,12 @@ const login = async (data: LoginData) => {
   }
 };
 
-export const LoginForm: FlowComponent = (props) => {
-  const { form, errors, setErrors } = createForm({
+interface LoginFormProps {
+  children: JSX.Element | ((state: { pending: () => boolean }) => JSX.Element);
+}
+
+export const LoginForm: Component<LoginFormProps> = (props) => {
+  const { form, isSubmitting, errors, setErrors } = createForm({
     initialValues: {
       email: '',
       password: '',
@@ -54,6 +58,16 @@ export const LoginForm: FlowComponent = (props) => {
   });
   form;
 
+  const resolvedChildren = children(() => {
+    const c = props.children;
+
+    if (typeof c === 'function') {
+      return c({ pending: () => isSubmitting() });
+    }
+
+    return c;
+  });
+
   return (
     <form use:form class="grid grid-cols-1 grid-rows-2 gap-8 py-4 px-8">
       <TextField required validationState={errors('email')?.length ? 'invalid' : 'valid'}>
@@ -70,7 +84,7 @@ export const LoginForm: FlowComponent = (props) => {
           <TextFieldErrorMessage>{errors('password')?.join(' ')}</TextFieldErrorMessage>
         </TextFieldLabel>
       </TextField>
-      {props.children}
+      {resolvedChildren()}
     </form>
   );
 };

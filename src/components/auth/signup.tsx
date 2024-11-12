@@ -2,11 +2,9 @@ import * as v from 'valibot';
 import { validator } from '~/lib/felte';
 import { TextField, TextFieldErrorMessage, TextFieldInput, TextFieldLabel } from '../ui/TextField';
 import { createForm } from '@felte/solid';
-import { FlowComponent } from 'solid-js';
+import { children, Component, JSX } from 'solid-js';
 import { ClientResponseError } from 'pocketbase';
-import { createAppSession } from '~/lib/session';
 import { TypedPocketBase } from '~/types/pocketbase-gen';
-import { usePocketbase } from '../pocketbase-context';
 import { getRequestEvent } from 'solid-js/web';
 import Pocketbase from 'pocketbase';
 import { API_URL } from '~/lib/constants';
@@ -65,8 +63,12 @@ const signup = async (data: SignupData) => {
   }
 };
 
-export const SignupForm: FlowComponent = (props) => {
-  const { form, errors, setErrors, touched } = createForm({
+interface SignupFormProps {
+  children: JSX.Element | ((state: { pending: () => boolean }) => JSX.Element);
+}
+
+export const SignupForm: Component<SignupFormProps> = (props) => {
+  const { form, errors, setErrors, touched, isSubmitting } = createForm({
     initialValues: {
       email: '',
       password: '',
@@ -83,6 +85,17 @@ export const SignupForm: FlowComponent = (props) => {
     },
   });
   form;
+
+  const resolvedChildren = children(() => {
+    const c = props.children;
+
+    if (typeof c === 'function') {
+      return c({ pending: () => isSubmitting() });
+    }
+
+    return c;
+  });
+
   return (
     <form use:form class="grid grid-cols-1 grid-rows-2 gap-8 py-4 px-8">
       <TextField required validationState={touched('email') && errors('email')?.length ? 'invalid' : 'valid'}>
@@ -109,7 +122,7 @@ export const SignupForm: FlowComponent = (props) => {
           <TextFieldErrorMessage>{errors('confirmPassword')?.join(' ')}</TextFieldErrorMessage>
         </TextFieldLabel>
       </TextField>
-      {props.children}
+      {resolvedChildren()}
     </form>
   );
 };
