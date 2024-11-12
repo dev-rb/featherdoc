@@ -22,7 +22,7 @@ const TooltipContent = <T extends ValidComponent = 'div'>(props: PolymorphicProp
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Content
         class={cn(
-          'z-50 origin-[var(--kb-popover-content-transform-origin)] overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95',
+          'z-50 origin-[var(--kb-popover-content-transform-origin)] overflow-hidden rounded-md border-secondary-foreground/10 border-1 bg-secondary px-3 py-1.5 text-sm text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95',
           local.class
         )}
         {...others}
@@ -34,7 +34,9 @@ const TooltipContent = <T extends ValidComponent = 'div'>(props: PolymorphicProp
 const SimpleTooltip: ParentComponent<{ content: string | JSX.Element }> = (props) => {
   return (
     <Tooltip>
-      <TooltipTrigger>{props.children}</TooltipTrigger>
+      <TooltipTrigger class="inline-block" as="div">
+        {props.children}
+      </TooltipTrigger>
       <TooltipContent>{props.content}</TooltipContent>
     </Tooltip>
   );

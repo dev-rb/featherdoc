@@ -13,6 +13,7 @@ import { createScrollBottom } from '~/lib/primitives';
 import { showToast } from '../ui/Toast';
 import { useNavigate } from '@solidjs/router';
 import { ACCEPTED_FILE_TYPES } from '~/lib/constants';
+import { SimpleTooltip } from '../ui/Tooltip';
 
 const CreateCommentSchema = v.object({
   content: v.pipe(v.string(), v.minLength(1)),
@@ -176,9 +177,11 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
   return (
     <div class="w-full h-full grid grid-rows-[auto_1fr_auto] grid-cols-1 gap-4">
       <div class="w-full flex gap-4 items-center">
-        <Button variant="secondary" size="icon" class="rounded-full aspect-square" onClick={props.onClose}>
-          <i class="i-lucide-x inline-block" />
-        </Button>
+        <SimpleTooltip content="Close">
+          <Button variant="secondary" size="icon" class="rounded-full aspect-square" onClick={props.onClose}>
+            <i class="i-lucide-x inline-block" />
+          </Button>
+        </SimpleTooltip>
         <div class="flex items-center gap-2 p-1 lg:px-2 lg:py-1 rounded-full bg-secondary text-foreground text-sm">
           <Switch>
             <Match when={comments.connectionStatus() === 'connecting'}>
@@ -200,23 +203,29 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
           </span>
         </div>
         <div class="ml-auto flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            class="size-8"
-            disabled={app.session().userId !== props.author}
-            loading={deleteThread.isPending}
-            onClick={handleDeleteThread}
-          >
-            <i class="i-lucide-trash inline-block" />
-          </Button>
-          <Button variant="outline" size="icon" class="size-8">
-            <i class="i-lucide-edit inline-block" />
-          </Button>
+          <SimpleTooltip content="Delete Thread">
+            <Button
+              variant="outline"
+              size="icon"
+              class="size-8"
+              disabled={app.session().userId !== props.author}
+              loading={deleteThread.isPending}
+              onClick={handleDeleteThread}
+            >
+              <i class="i-lucide-trash inline-block" />
+            </Button>
+          </SimpleTooltip>
+          <SimpleTooltip content="Edit Thread">
+            <Button variant="outline" size="icon" class="size-8">
+              <i class="i-lucide-edit inline-block" />
+            </Button>
+          </SimpleTooltip>
 
-          <Button variant="outline" size="icon" class="size-8">
-            <i class="i-lucide-plus inline-block" />
-          </Button>
+          <SimpleTooltip content="Add assets">
+            <Button variant="outline" size="icon" class="size-8">
+              <i class="i-lucide-plus inline-block" />
+            </Button>
+          </SimpleTooltip>
 
           <Button
             variant={props.resolved ? 'default' : 'secondary'}
@@ -277,13 +286,15 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
                               <Button
                                 variant="destructive"
                                 size="icon"
-                                class="group-hover/image:flex hidden size-6 absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2 z-2"
+                                class="group-hover/image:(size-6) flex size-0 overflow-hidden absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2 z-2"
                                 disabled={app.session().userId !== comment.author}
                                 onClick={() =>
                                   handleRemoveAttachment(comment.id, comment.author, comment.attachments[0])
                                 }
                               >
-                                <i class="i-lucide-x inline-block pointer-events-none" />
+                                <SimpleTooltip content="Remove attachment">
+                                  <i class="i-lucide-x inline-block pointer-events-none" />
+                                </SimpleTooltip>
                               </Button>
                             </Show>
                           </div>
@@ -322,7 +333,9 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
                     onClick={() => handleDeleteComment(comment.id, comment.author)}
                     loading={deleteComment.isPending}
                   >
-                    <i class="i-lucide-ellipsis-vertical inline-block" />
+                    <SimpleTooltip content="More actions">
+                      <i class="i-lucide-ellipsis-vertical inline-block" />
+                    </SimpleTooltip>
                   </Button>
                 </Show>
               </div>
@@ -369,55 +382,61 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
             />
           </TextField>
 
-          <Button
-            as={'div'}
-            variant="ghost"
-            size="icon"
-            class="h-full max-h-12 text-muted-foreground hover:(bg-secondary text-primary) text-xl"
-            onClick={() => {
-              fileUploadRef()?.click();
-            }}
-          >
-            <input
-              ref={setFileUploadRef}
-              type="file"
-              class="text-0 size-0"
-              multiple
-              accept={ACCEPTED_FILE_TYPES.join(',')}
-              onChange={(e) => {
-                const files = e.currentTarget.files;
-
-                if (!files) return;
-
-                const _files = Array.from(files);
-
-                if (_files.length > 5) {
-                  showToast({
-                    title: "Can't upload more than 5 files",
-                    variant: 'error',
-                  });
-                  return;
-                }
-
-                const validated = v.safeParse(CreateCommentSchema, { content: 'S', attachments: _files });
-
-                if (!validated.success) {
-                  const failedFiles: File[] = validated.issues.filter((i) => i.type === 'max_size').map((i) => i.input);
-                  showToast({
-                    title: `File(s) too large: ${failedFiles.map((f) => f.name).join(', ')}`,
-                    description: validated.issues.map((i) => i.message).join('. '),
-                    variant: 'error',
-                  });
-                }
-
-                setFields('attachments', _files);
+          <SimpleTooltip content="Upload attachments">
+            <Button
+              as={'div'}
+              variant="ghost"
+              size="icon"
+              class="h-full max-h-12 text-muted-foreground hover:(bg-secondary text-primary) text-xl"
+              onClick={() => {
+                fileUploadRef()?.click();
               }}
-            />
-            <i class="i-lucide-image-plus inline-block" />
-          </Button>
-          <Button type="submit" size="icon" class="h-full max-h-12 text-xl" disabled={data().content.length === 0}>
-            <i class="i-lucide-send-horizontal inline-block" />
-          </Button>
+            >
+              <input
+                ref={setFileUploadRef}
+                type="file"
+                class="text-0 size-0"
+                multiple
+                accept={ACCEPTED_FILE_TYPES.join(',')}
+                onChange={(e) => {
+                  const files = e.currentTarget.files;
+
+                  if (!files) return;
+
+                  const _files = Array.from(files);
+
+                  if (_files.length > 5) {
+                    showToast({
+                      title: "Can't upload more than 5 files",
+                      variant: 'error',
+                    });
+                    return;
+                  }
+
+                  const validated = v.safeParse(CreateCommentSchema, { content: 'S', attachments: _files });
+
+                  if (!validated.success) {
+                    const failedFiles: File[] = validated.issues
+                      .filter((i) => i.type === 'max_size')
+                      .map((i) => i.input);
+                    showToast({
+                      title: `File(s) too large: ${failedFiles.map((f) => f.name).join(', ')}`,
+                      description: validated.issues.map((i) => i.message).join('. '),
+                      variant: 'error',
+                    });
+                  }
+
+                  setFields('attachments', _files);
+                }}
+              />
+              <i class="i-lucide-upload inline-block" />
+            </Button>
+          </SimpleTooltip>
+          <SimpleTooltip content="Send message">
+            <Button type="submit" size="icon" class="h-full max-h-12 text-xl" disabled={data().content.length === 0}>
+              <i class="i-lucide-send-horizontal inline-block" />
+            </Button>
+          </SimpleTooltip>
         </form>
       </div>
     </div>
