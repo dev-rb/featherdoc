@@ -1,4 +1,4 @@
-import { createEffect, createSignal, For, Match, Show, Switch, VoidComponent } from 'solid-js';
+import { createSignal, For, Match, Show, Switch, VoidComponent } from 'solid-js';
 import { createMutation, createRealtimeResource, invalidateQuery } from '~/lib/pocketbase';
 import { ThreadsResponse, UsersResponse } from '~/types/pocketbase-gen';
 import { usePocketbase } from '../pocketbase-context';
@@ -10,7 +10,6 @@ import { TextField, TextFieldTextArea } from '../ui/TextField';
 import { Button } from '../ui/Button';
 import dayjs from 'dayjs';
 import { createScrollBottom } from '~/lib/primitives';
-import { cn } from '~/lib/utils';
 import { showToast } from '../ui/Toast';
 import { useNavigate } from '@solidjs/router';
 
@@ -80,12 +79,11 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
 
   const createComment = createMutation('comments', 'create');
 
-  const { form, data, reset, setFields, addField, errors } = createForm<CreateCommentValues>({
+  const { form, data, reset, setFields } = createForm<CreateCommentValues>({
     initialValues: {
       content: '',
     },
     extend: validator({ schema: CreateCommentSchema }),
-    onError(err) {},
     async onSubmit(values) {
       const session = app.session();
 
