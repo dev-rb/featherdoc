@@ -8,6 +8,7 @@ import Pocketbase from 'pocketbase';
 import { createAppSession } from '~/lib/session';
 import { getRequestEvent } from 'solid-js/web';
 import { revalidate } from '@solidjs/router';
+import { API_URL } from '~/lib/constants';
 
 const LoginSchema = v.object({
   email: v.pipe(v.string('Email is required'), v.email('Enter a valid email')),
@@ -18,7 +19,7 @@ type LoginData = v.InferInput<typeof LoginSchema>;
 
 const login = async (data: LoginData) => {
   'use server';
-  const pb = new Pocketbase('http://127.0.0.1:8090') as TypedPocketBase;
+  const pb = new Pocketbase(API_URL) as TypedPocketBase;
   try {
     await pb.collection('users').authWithPassword(data.email, data.password);
     await pb.collection('users').authRefresh();

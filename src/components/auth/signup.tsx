@@ -9,6 +9,7 @@ import { TypedPocketBase } from '~/types/pocketbase-gen';
 import { usePocketbase } from '../pocketbase-context';
 import { getRequestEvent } from 'solid-js/web';
 import Pocketbase from 'pocketbase';
+import { API_URL } from '~/lib/constants';
 
 const SignupSchema = v.pipe(
   v.object({
@@ -42,7 +43,7 @@ type SignupData = v.InferInput<typeof SignupSchema>;
 
 const signup = async (data: SignupData) => {
   'use server';
-  const pb = new Pocketbase('http://127.0.0.1:8090') as TypedPocketBase;
+  const pb = new Pocketbase(API_URL) as TypedPocketBase;
   try {
     await pb.collection('users').create({
       email: data.email,

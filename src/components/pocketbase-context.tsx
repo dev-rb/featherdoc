@@ -3,6 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import Pocketbase from 'pocketbase';
 import { createContext, createRenderEffect, FlowComponent, useContext } from 'solid-js';
 import { getRequestEvent, isServer } from 'solid-js/web';
+import { API_URL } from '~/lib/constants';
 import { TypedPocketBase } from '~/types/pocketbase-gen';
 
 const PocketbaseContext = createContext<TypedPocketBase>();
@@ -28,7 +29,7 @@ export const cacheSession = query(async () => {
   const cookie = event?.request.headers.get('cookie');
 
   if (event) {
-    event.locals.pb = new Pocketbase('http://127.0.0.1:8090');
+    event.locals.pb = new Pocketbase(API_URL);
   }
   event?.locals.pb?.authStore.loadFromCookie(cookie || '');
 
@@ -48,7 +49,7 @@ export const cacheSession = query(async () => {
 export const PocketbaseProvider: FlowComponent = (props) => {
   const sessionData = createAsync(() => cacheSession(), { deferStream: true });
 
-  let pb = new Pocketbase('http://127.0.0.1:8090') as TypedPocketBase;
+  let pb = new Pocketbase(API_URL) as TypedPocketBase;
 
   createRenderEffect(() => {
     const data = sessionData();
