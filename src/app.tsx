@@ -8,6 +8,7 @@ import { FileRoutes } from '@solidjs/start/router';
 import { Suspense } from 'solid-js';
 import { PocketbaseProvider } from './components/pocketbase-context';
 import { AppContextProvider } from './components/app-context';
+import { Toaster } from './components/ui/Toast';
 
 declare module 'solid-js' {
   namespace JSX {
@@ -23,6 +24,7 @@ export default function App() {
       root={(props) => (
         <MetaProvider>
           <Title>Support World</Title>
+          <Toaster />
           <PocketbaseProvider>
             <AppContextProvider>
               <Suspense>{props.children}</Suspense>
