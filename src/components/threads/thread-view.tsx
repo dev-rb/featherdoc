@@ -16,7 +16,12 @@ import { useNavigate } from '@solidjs/router';
 
 const CreateCommentSchema = v.object({
   content: v.pipe(v.string(), v.minLength(1)),
-  attachments: v.optional(v.array(v.file())),
+  attachments: v.optional(
+    v.pipe(
+      v.array(v.pipe(v.file(), v.maxSize(5 * 1024 * 1024, 'Files can not be larger than 5mb'))),
+      v.maxLength(5, 'You can only upload 5 files at a time')
+    )
+  ),
 });
 
 type CreateCommentValues = v.InferInput<typeof CreateCommentSchema>;
@@ -75,11 +80,12 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
 
   const createComment = createMutation('comments', 'create');
 
-  const { form, data, reset, setFields } = createForm<CreateCommentValues>({
+  const { form, data, reset, setFields, addField, errors } = createForm<CreateCommentValues>({
     initialValues: {
       content: '',
     },
     extend: validator({ schema: CreateCommentSchema }),
+    onError(err) {},
     async onSubmit(values) {
       const session = app.session();
 
@@ -373,7 +379,40 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
               fileUploadRef()?.click();
             }}
           >
-            <input ref={setFileUploadRef} type="file" name="attachments" class="text-0 size-0" multiple />
+            <input
+              ref={setFileUploadRef}
+              type="file"
+              class="text-0 size-0"
+              multiple
+              onChange={(e) => {
+                const files = e.currentTarget.files;
+
+                if (!files) return;
+
+                const _files = Array.from(files);
+
+                if (_files.length > 5) {
+                  showToast({
+                    title: "Can't upload more than 5 files",
+                    variant: 'error',
+                  });
+                  return;
+                }
+
+                const validated = v.safeParse(CreateCommentSchema, { content: 'S', attachments: _files });
+
+                if (!validated.success) {
+                  const failedFiles: File[] = validated.issues.filter((i) => i.type === 'max_size').map((i) => i.input);
+                  showToast({
+                    title: `File(s) too large: ${failedFiles.map((f) => f.name).join(', ')}`,
+                    description: validated.issues.map((i) => i.message).join('. '),
+                    variant: 'error',
+                  });
+                }
+
+                setFields('attachments', _files);
+              }}
+            />
             <i class="i-lucide-image-plus inline-block" />
           </Button>
           <Button type="submit" size="icon" class="h-full max-h-12 text-xl" disabled={data().content.length === 0}>
