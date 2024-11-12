@@ -18,7 +18,7 @@ RUN wget https://github.com/pocketbase/pocketbase/releases/download/v${VERSION}/
     && unzip pocketbase_${VERSION}_${BUILDX_ARCH}.zip \
     && chmod +x /pocketbase
 
-COPY pocketbase_api/pb_hooks /pb_hooks
+# COPY pocketbase_api/pb_hooks /pb_hooks
 COPY pocketbase_api/pb_migrations /pb_migrations
 
 FROM scratch
@@ -26,7 +26,7 @@ FROM scratch
 EXPOSE 8090
 
 COPY --from=downloader /pocketbase /usr/local/bin/pocketbase
-COPY --from=downloader /pb_hooks /pb_hooks
+# COPY --from=downloader /pb_hooks /pb_hooks
 COPY --from=downloader /pb_migrations /pb_migrations
 
 CMD ["/usr/local/bin/pocketbase", "serve", "--http=0.0.0.0:8090", "--dir=/pb_data", "--publicDir=/pb_public", "--hooksDir=/pb_hooks", "--migrationsDir=/pb_migrations"]
