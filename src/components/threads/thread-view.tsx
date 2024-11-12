@@ -254,7 +254,7 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
             fallback={<div class="text-muted-foreground text-center">Be the first to reply to this thread</div>}
           >
             {(comment) => (
-              <div class="group w-full flex items-start gap-4">
+              <div class="relative group w-full flex items-start gap-4">
                 <div class="bg-blue-600/50 w-10 h-10 aspect-square rounded-full"></div>
                 <div class="w-full flex flex-col gap-2">
                   <div class="flex items-center gap-2">
@@ -268,9 +268,9 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
                       when={comment.attachments.length > 1}
                       fallback={
                         <Show when={comment.attachments.length === 1}>
-                          <div class="group/image relative w-fit bg-secondary rounded-lg cursor-zoom-in">
+                          <div class="group/image relative max-w-90% w-fit bg-secondary rounded-lg cursor-zoom-in">
                             <img
-                              class="w-auto max-h-80 object-cover rounded-lg"
+                              class="w-auto max-h-80 object-contain rounded-lg"
                               src={pb.files.getUrl(comment, comment.attachments[0])}
                             />
                             <Show when={app.session().userId === comment.author}>
@@ -316,7 +316,7 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
 
                 <Show when={app.session().userId === comment.author}>
                   <Button
-                    class="ml-auto size-8 group-hover:flex hidden"
+                    class="absolute right-4 top-0 ml-auto size-8 group-hover:flex hidden"
                     size="icon"
                     variant="secondary"
                     onClick={() => handleDeleteComment(comment.id, comment.author)}
