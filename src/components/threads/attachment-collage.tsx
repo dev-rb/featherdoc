@@ -120,7 +120,23 @@ export const AttachmentCard: VoidComponent<AttachmentCard> = (props) => {
       </Match>
 
       <Match when={props.type === 'text' && props}>
-        {(resolvedText) => <TextCard text={resolvedText().text}></TextCard>}
+        {(resolvedText) => (
+          <TextCard text={resolvedText().text}>
+            <Show when={app.session().userId === props.author}>
+              <Button
+                variant="destructive"
+                size="icon"
+                class="group-hover/image:(size-6) flex size-0 overflow-hidden absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2 z-2"
+                disabled={app.session().userId !== props.author}
+                onClick={() => props.onRemovePress(props.option.name)}
+              >
+                <SimpleTooltip content="Remove attachment">
+                  <i class="i-lucide-x block pointer-events-none" />
+                </SimpleTooltip>
+              </Button>
+            </Show>
+          </TextCard>
+        )}
       </Match>
     </Switch>
   );
@@ -176,13 +192,21 @@ const TextCard: ParentComponent<TextCardProps> = (props) => {
           <div class="w-full h-full whitespace-pre">{props.text}</div>
         </div>
       </AttachmentLightbox>
-      <div class="group/image relative w-full bg-secondary rounded-lg max-h-48 overflow-auto">
-        <div class="whitespace-pre grid relative">
-          <span class="h-full w-full">{props.text}</span>
-          <div class="col-start-1 col-end-1 block absolute top-0 left-0 w-full h-full bg-black/50"></div>
+      <div class="group/image relative w-full bg-secondary rounded-lg max-h-48">
+        <div class="w-full h-full relative overflow-auto">
+          <div class="whitespace-pre grid relative">
+            <span class="h-full w-full">{props.text}</span>
+            <div class="col-start-1 col-end-1 block absolute top-0 left-0 w-full h-full bg-black/50"></div>
+          </div>
         </div>
-        <Button class="absolute top-2 right-2 rounded-full size-6" size="icon" onClick={() => setOpen(true)}>
-          <i class="i-lucide-expand inline-block text-sm" />
+        <Button
+          class="group-hover/image:size-6 absolute top-0 right-2 -translate-x-1/2 -translate-y-1/2 rounded-full size-0 overflow-hidden"
+          size="icon"
+          onClick={() => setOpen(true)}
+        >
+          <SimpleTooltip content="Click to expand">
+            <i class="i-lucide-expand block text-sm" />
+          </SimpleTooltip>
         </Button>
 
         {props.children}
