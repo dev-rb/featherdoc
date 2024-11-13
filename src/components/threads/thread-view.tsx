@@ -303,27 +303,11 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
                       }
                     >
                       <div class="w-full flex flex-wrap gap-4">
-                        <AttachmentCollage attachments={comment.attachments.map((a) => pb.files.getUrl(comment, a))} />
-                        {/* <For each={comment.attachments}> */}
-                        {/*   {(attachment) => ( */}
-                        {/*     <div class="group/image relative w-fit bg-secondary rounded-lg cursor-zoom-in"> */}
-                        {/*       <img class="size-28 object-cover rounded-lg" src={pb.files.getUrl(comment, attachment)} /> */}
-                        {/*       <Show when={app.session().userId === comment.author}> */}
-                        {/*         <Button */}
-                        {/*           variant="destructive" */}
-                        {/*           size="icon" */}
-                        {/*           class="group-hover/image:flex hidden size-6 absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2" */}
-                        {/*           onClick={() => handleRemoveAttachment(comment.id, comment.author, attachment)} */}
-                        {/*           disabled={app.session().userId !== comment.author} */}
-                        {/*         > */}
-                        {/*           <SimpleTooltip content="Remove attachment"> */}
-                        {/*             <i class="i-lucide-x inline-block pointer-events-none" /> */}
-                        {/*           </SimpleTooltip> */}
-                        {/*         </Button> */}
-                        {/*       </Show> */}
-                        {/*     </div> */}
-                        {/*   )} */}
-                        {/* </For> */}
+                        <AttachmentCollage
+                          author={comment.author}
+                          attachments={comment.attachments.map((a) => ({ name: a, url: pb.files.getUrl(comment, a) }))}
+                          onRemovePress={(attachment) => handleRemoveAttachment(comment.id, comment.author, attachment)}
+                        />
                       </div>
                     </Show>
                   </div>
