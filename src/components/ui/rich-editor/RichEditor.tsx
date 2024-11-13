@@ -3,9 +3,11 @@ import { StarterKit } from '@tiptap/starter-kit';
 import { Editor } from '@tiptap/core';
 import Placeholder from '@tiptap/extension-placeholder';
 import ListKeymap from '@tiptap/extension-list-keymap';
+import ImageExtension from '@tiptap/extension-image';
 import { CustomHorizontalRule } from './horizontal-rule';
 import { makeClickOutside } from '~/lib/primitives';
 import './editor.css';
+import { showToast } from '../Toast';
 
 type DivProps = JSX.HTMLAttributes<HTMLDivElement>;
 
@@ -121,11 +123,56 @@ export const RichEditor = (props: RichEditorProps) => {
         }),
         ListKeymap,
         CustomHorizontalRule,
+        ImageExtension,
       ],
       content: props.contents,
       editorProps: {
         attributes: {
           class: self.class ?? '',
+        },
+        handleDrop: (view, event, slice, moved) => {
+          if (!moved && event.dataTransfer && event.dataTransfer.files) {
+            if (event.dataTransfer.files.length === 0) return false;
+            if (event.dataTransfer.files.length > 1) {
+              showToast({ title: 'Can only drag in 1 file at a time', variant: 'error' });
+              return true;
+            }
+            const file = event.dataTransfer.files[0];
+            const fileSize = Math.trunc(file.size / 1024 / 1024);
+
+            if (!file.type.includes('image')) {
+              return false;
+            }
+
+            if (fileSize > 5) {
+              showToast({
+                title: `File too large: ${file.name}`,
+                description: 'Files can not be larger than 5mb',
+                variant: 'error',
+              });
+              return true;
+            }
+
+            const img = new Image();
+            img.src = URL.createObjectURL(file);
+            img.addEventListener(
+              'load',
+              function () {
+                const { schema } = view.state;
+                const coordinates = view.posAtCoords({ left: event.clientX, top: event.clientY });
+                if (!coordinates) return;
+                const node = schema.nodes.image.create({ src: img.src });
+                const placeholder = schema.nodes.paragraph.create({ innerText: '' });
+                const transaction = view.state.tr.insert(coordinates.pos, [node, placeholder]);
+
+                return view.dispatch(transaction);
+              },
+              { once: true }
+            );
+            return true;
+          }
+
+          return false;
         },
       },
       onUpdate(props) {

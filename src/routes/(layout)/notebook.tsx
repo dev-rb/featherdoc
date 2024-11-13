@@ -83,7 +83,7 @@ export default function Notebook() {
             }}
           >
             <RichEditor
-              class="w-full h-full focus:outline-none text-white"
+              class="w-full h-full focus:outline-none text-white overflow-auto"
               contents={notebook.data.latest?.content}
               onInput={(value) => debouncedUpdate(value)}
             />
