@@ -163,14 +163,25 @@ interface TextCardProps {
 }
 
 const TextCard: ParentComponent<TextCardProps> = (props) => {
+  const [open, setOpen] = createSignal(false);
   return (
-    <div class="group/image relative w-full bg-secondary rounded-lg cursor-zoom-in max-h-48 overflow-auto">
-      <div class="whitespace-pre grid relative">
-        <span class="h-full w-full">{props.text}</span>
-        <div class="col-start-1 col-end-1 block absolute top-0 left-0 w-full h-full bg-black/50"></div>
-      </div>
+    <>
+      <AttachmentLightbox open={open()} onOpenChange={setOpen}>
+        <div class="max-w-screen max-h-85vh overflow-auto bg-secondary text-white rounded-lg p-2">
+          <div class="w-full h-full whitespace-pre">{props.text}</div>
+        </div>
+      </AttachmentLightbox>
+      <div class="group/image relative w-full bg-secondary rounded-lg max-h-48 overflow-auto">
+        <div class="whitespace-pre grid relative">
+          <span class="h-full w-full">{props.text}</span>
+          <div class="col-start-1 col-end-1 block absolute top-0 left-0 w-full h-full bg-black/50"></div>
+        </div>
+        <Button class="absolute top-2 right-2 rounded-full size-6" size="icon" onClick={() => setOpen(true)}>
+          <i class="i-lucide-expand inline-block text-sm" />
+        </Button>
 
-      {props.children}
-    </div>
+        {props.children}
+      </div>
+    </>
   );
 };
