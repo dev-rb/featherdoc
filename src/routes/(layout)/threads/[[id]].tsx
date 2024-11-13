@@ -98,7 +98,7 @@ export default function Threads() {
             </div>
           }
         >
-          <article class="w-full h-full overflow-hidden bg-muted rounded-lg p-2 lg:p-4 max-lg:(fixed top-0 left-0)">
+          <article class="w-full h-full overflow-hidden bg-muted rounded-lg max-lg:(fixed top-0 left-0)">
             <ErrorBoundary
               fallback={(e) => {
                 const isNotFoundError = createMemo(() => {

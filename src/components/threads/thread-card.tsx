@@ -40,7 +40,7 @@ export const ThreadCard: VoidComponent<ThreadCardProps> = (props) => {
               {dayjs(props.timestamp).fromNow()}
             </span>
           </div>
-          <CardTitle class={cn('leading-normal line-clamp-2 text-muted-foreground', isActive() && 'text-primary')}>
+          <CardTitle class={cn('leading-normal line-clamp-2 text-muted-foreground', isActive() && 'text-white')}>
             {props.title}
           </CardTitle>
         </CardHeader>

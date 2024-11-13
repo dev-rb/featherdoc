@@ -177,7 +177,7 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
 
   return (
     <div class="w-full h-full grid grid-rows-[auto_1fr_auto] grid-cols-1 gap-4">
-      <div class="w-full flex gap-4 items-center">
+      <div class="p-2 lg:p-4 w-full flex gap-4 items-center">
         <SimpleTooltip content="Close">
           <Button variant="secondary" size="icon" class="rounded-full aspect-square" onClick={props.onClose}>
             <i class="i-lucide-x inline-block" />
@@ -241,30 +241,32 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
         </div>
       </div>
       <div ref={setContainerRef} class="w-full h-full overflow-auto">
-        <div class="w-full max-h-min flex flex-col gap-2 p-4 bg-secondary rounded-lg">
-          <div class="w-full flex items-start gap-4">
-            <div class="bg-blue-600/50 w-10 h-10 aspect-square rounded-full" />
-            <div class="w-full flex flex-col gap-2">
-              <div class="w-full flex items-center gap-2">
-                <span class="text-foreground/70 text-xs">{props.expand?.author.username || 'Unknown'}</span>
-                <span class="text-xs text-foreground/50">{dayjs(props.created).fromNow()}</span>
-              </div>
+        <div class="p-2 lg:p-4">
+          <div class="w-full max-h-min flex flex-col gap-2 p-4 bg-secondary rounded-lg">
+            <div class="w-full flex items-start gap-4">
+              <div class="bg-blue-600/50 w-10 h-10 aspect-square rounded-full" />
+              <div class="w-full flex flex-col gap-2">
+                <div class="w-full flex items-center gap-2">
+                  <span class="text-foreground/70 text-xs">{props.expand?.author.username || 'Unknown'}</span>
+                  <span class="text-xs text-foreground/50">{dayjs(props.created).fromNow()}</span>
+                </div>
 
-              <h1 class="text-foreground font-medium text-2xl">{props.title}</h1>
-              <Show when={props.content}>
-                <p class="text-sm text-foreground/70">{props.content}</p>
-              </Show>
+                <h1 class="text-foreground font-medium text-2xl">{props.title}</h1>
+                <Show when={props.content}>
+                  <p class="text-sm text-foreground/70">{props.content}</p>
+                </Show>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="flex flex-col gap-8 w-full h-min py-4">
+        <div class="flex flex-col w-full h-min py-4">
           <For
             each={comments.data()?.items}
             fallback={<div class="text-muted-foreground text-center">Be the first to reply to this thread</div>}
           >
             {(comment) => (
-              <div class="relative group w-full flex items-start gap-4">
+              <div class="relative group w-full flex items-start gap-4 hover:bg-secondary/20 p-4">
                 <div class="bg-blue-600/50 w-10 h-10 aspect-square rounded-full"></div>
                 <div class="w-full flex flex-col gap-2">
                   <div class="flex items-center gap-2">
@@ -294,7 +296,7 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
                                 }
                               >
                                 <SimpleTooltip content="Remove attachment">
-                                  <i class="i-lucide-x inline-block pointer-events-none" />
+                                  <i class="i-lucide-x block pointer-events-none" />
                                 </SimpleTooltip>
                               </Button>
                             </Show>
@@ -315,14 +317,14 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
 
                 <Show when={app.session().userId === comment.author}>
                   <Button
-                    class="absolute right-4 top-0 ml-auto size-8 group-hover:flex hidden"
+                    class="absolute right-4 top-4 ml-auto size-8 group-hover:flex hidden"
                     size="icon"
                     variant="secondary"
                     onClick={() => handleDeleteComment(comment.id, comment.author)}
                     loading={deleteComment.isPending}
                   >
                     <SimpleTooltip content="More actions">
-                      <i class="i-lucide-ellipsis-vertical inline-block" />
+                      <i class="i-lucide-ellipsis-vertical block" />
                     </SimpleTooltip>
                   </Button>
                 </Show>
@@ -332,7 +334,7 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
         </div>
       </div>
 
-      <div class="row-start-4 w-full flex flex-col gap-4">
+      <div class="row-start-4 w-full flex flex-col gap-4 p-2 lg:p-4">
         <div class="w-full flex gap-4">
           <For each={data('attachments')}>
             {(file) => (
@@ -350,7 +352,7 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
                       );
                     }}
                   >
-                    <i class="i-lucide-x inline-block" />
+                    <i class="i-lucide-x align-middle block" />
                   </Button>
                 </div>
               </Show>
