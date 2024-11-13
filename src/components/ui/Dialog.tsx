@@ -95,4 +95,13 @@ const DialogDescription = <T extends ValidComponent = 'p'>(props: PolymorphicPro
   return <DialogPrimitive.Description class={cn('text-sm text-muted-foreground', props.class)} {...rest} />;
 };
 
-export { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription };
+export {
+  Dialog,
+  DialogTrigger,
+  DialogOverlay,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+};

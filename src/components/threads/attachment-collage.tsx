@@ -1,8 +1,9 @@
 import { createAsync } from '@solidjs/router';
-import { For, Index, Match, ParentComponent, Show, Suspense, Switch, VoidComponent } from 'solid-js';
+import { createSignal, Index, Match, ParentComponent, Show, Suspense, Switch, VoidComponent } from 'solid-js';
 import { useApp } from '../app-context';
 import { Button } from '../ui/Button';
 import { SimpleTooltip } from '../ui/Tooltip';
+import { AttachmentLightbox } from '../ui/AttachmentLightbox';
 
 type AttachmentOption = { name: string; url: string };
 
@@ -46,7 +47,7 @@ export const AttachmentCollage: VoidComponent<AttachmentCollageProps> = (props) 
   });
 
   return (
-    <div class="grid grid-cols-3 grid-rows-[auto_auto] gap-2">
+    <div class="w-full grid grid-cols-[repeat(auto-fill,12rem)] grid-rows-[auto_auto] gap-4">
       <Suspense>
         <Index each={resolvedFiles.latest}>
           {(file) => {
@@ -125,11 +126,22 @@ interface ImageCardProps {
 }
 
 const ImageCard: ParentComponent<ImageCardProps> = (props) => {
+  const [open, setOpen] = createSignal(false);
   return (
-    <div class="group/image relative w-fit bg-secondary rounded-lg cursor-zoom-in">
-      <img class="size-48 object-cover rounded-lg" src={props.src} />
-      {props.children}
-    </div>
+    <>
+      <AttachmentLightbox open={open()} onOpenChange={setOpen}>
+        <img class="h-auto" src={props.src} />
+      </AttachmentLightbox>
+      <div
+        class="group/image relative w-fit bg-secondary rounded-lg cursor-zoom-in"
+        onClick={() => {
+          setOpen(true);
+        }}
+      >
+        <img class="size-48 object-cover rounded-lg" src={props.src} />
+        {props.children}
+      </div>
+    </>
   );
 };
 
