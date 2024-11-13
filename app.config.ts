@@ -4,7 +4,7 @@ import UnoCSS from 'unocss/vite';
 export default defineConfig({
   middleware: './src/lib/middleware.ts',
   server: {
-    preset: 'node-server',
+    preset: 'vercel',
     prerender: {
       routes: ['/', '/threads'],
     },
