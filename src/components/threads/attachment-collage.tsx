@@ -4,6 +4,7 @@ import { useApp } from '../app-context';
 import { Button } from '../ui/Button';
 import { SimpleTooltip } from '../ui/Tooltip';
 import { AttachmentLightbox } from '../ui/AttachmentLightbox';
+import { cn } from '~/lib/utils';
 
 type AttachmentOption = { name: string; url: string };
 
@@ -19,8 +20,6 @@ interface AttachmentCollageProps {
 }
 
 export const AttachmentCollage: VoidComponent<AttachmentCollageProps> = (props) => {
-  const app = useApp();
-
   const resolvedFiles = createAsync(async () => {
     const resolved: AttachmentType[] = [];
 
@@ -47,7 +46,12 @@ export const AttachmentCollage: VoidComponent<AttachmentCollageProps> = (props) 
   });
 
   return (
-    <div class="w-full grid grid-cols-[repeat(auto-fill,12rem)] grid-rows-[auto_auto] gap-4">
+    <div
+      class={cn(
+        'w-full grid grid-cols-[repeat(auto-fill,12rem)] grid-rows-[auto_auto] gap-4',
+        props.attachments.length === 1 && 'grid-cols-1'
+      )}
+    >
       <Suspense>
         <Index each={resolvedFiles.latest}>
           {(file) => {
@@ -62,55 +66,7 @@ export const AttachmentCollage: VoidComponent<AttachmentCollageProps> = (props) 
             return (
               <Show when={_file()}>
                 {(resolved) => (
-                  <Switch>
-                    <Match when={resolved().type === 'image'}>
-                      <ImageCard src={resolved().option.url}>
-                        <Show when={app.session().userId === props.author}>
-                          <Button
-                            variant="destructive"
-                            size="icon"
-                            class="group-hover/image:(size-6) flex size-0 overflow-hidden absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2 z-2"
-                            disabled={app.session().userId !== props.author}
-                            onClick={() => props.onRemovePress(resolved().option.name)}
-                          >
-                            <SimpleTooltip content="Remove attachment">
-                              <i class="i-lucide-x block pointer-events-none" />
-                            </SimpleTooltip>
-                          </Button>
-                        </Show>
-                      </ImageCard>
-                    </Match>
-
-                    <Match when={resolved().type === 'video'}>
-                      <VideoCard src={resolved().option.url}>
-                        <Show when={app.session().userId === props.author}>
-                          <Button
-                            variant="destructive"
-                            size="icon"
-                            class="group-hover/image:(size-6) flex size-0 overflow-hidden absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2 z-2"
-                            disabled={app.session().userId !== props.author}
-                            onClick={() => props.onRemovePress(resolved().option.name)}
-                          >
-                            <SimpleTooltip content="Remove attachment">
-                              <i class="i-lucide-x block pointer-events-none" />
-                            </SimpleTooltip>
-                          </Button>
-                        </Show>
-                      </VideoCard>
-                    </Match>
-
-                    <Match
-                      when={(() => {
-                        const r = resolved();
-
-                        if (r.type === 'text') {
-                          return r;
-                        }
-                      })()}
-                    >
-                      {(resolvedText) => <TextCard text={resolvedText().text}></TextCard>}
-                    </Match>
-                  </Switch>
+                  <AttachmentCard {...resolved()} author={props.author} onRemovePress={props.onRemovePress} />
                 )}
               </Show>
             );
@@ -118,6 +74,55 @@ export const AttachmentCollage: VoidComponent<AttachmentCollageProps> = (props) 
         </Index>
       </Suspense>
     </div>
+  );
+};
+
+type AttachmentCard = AttachmentType & Pick<AttachmentCollageProps, 'author' | 'onRemovePress'>;
+
+export const AttachmentCard: VoidComponent<AttachmentCard> = (props) => {
+  const app = useApp();
+  return (
+    <Switch>
+      <Match when={props.type === 'image'}>
+        <ImageCard src={props.option.url}>
+          <Show when={app.session().userId === props.author}>
+            <Button
+              variant="destructive"
+              size="icon"
+              class="group-hover/image:(size-6) flex size-0 overflow-hidden absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2 z-2"
+              disabled={app.session().userId !== props.author}
+              onClick={() => props.onRemovePress(props.option.name)}
+            >
+              <SimpleTooltip content="Remove attachment">
+                <i class="i-lucide-x block pointer-events-none" />
+              </SimpleTooltip>
+            </Button>
+          </Show>
+        </ImageCard>
+      </Match>
+
+      <Match when={props.type === 'video'}>
+        <VideoCard src={props.option.url}>
+          <Show when={app.session().userId === props.author}>
+            <Button
+              variant="destructive"
+              size="icon"
+              class="group-hover/image:(size-6) flex size-0 overflow-hidden absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2 z-2"
+              disabled={app.session().userId !== props.author}
+              onClick={() => props.onRemovePress(props.option.name)}
+            >
+              <SimpleTooltip content="Remove attachment">
+                <i class="i-lucide-x block pointer-events-none" />
+              </SimpleTooltip>
+            </Button>
+          </Show>
+        </VideoCard>
+      </Match>
+
+      <Match when={props.type === 'text' && props}>
+        {(resolvedText) => <TextCard text={resolvedText().text}></TextCard>}
+      </Match>
+    </Switch>
   );
 };
 
@@ -138,7 +143,7 @@ const ImageCard: ParentComponent<ImageCardProps> = (props) => {
           setOpen(true);
         }}
       >
-        <img class="size-48 object-cover rounded-lg" src={props.src} />
+        <img class="w-auto max-h-90 h-full object-contain rounded-lg" src={props.src} />
         {props.children}
       </div>
     </>
@@ -151,8 +156,8 @@ interface VideoCardProps {
 
 const VideoCard: ParentComponent<VideoCardProps> = (props) => {
   return (
-    <div class="group/image relative w-fit bg-secondary rounded-lg cursor-zoom-in">
-      <video class="size-48 object-cover rounded-lg" src={props.src} controls muted />
+    <div class="group/image relative w-full bg-secondary rounded-lg cursor-zoom-in">
+      <video class="object-cover rounded-lg" src={props.src} controls muted />
       {props.children}
     </div>
   );

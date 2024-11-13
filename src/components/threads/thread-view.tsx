@@ -276,34 +276,7 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
 
                   <div class="w-full flex flex-col gap-4 h-max text-foreground/70">
                     <p>{comment.content}</p>
-                    <Show
-                      when={comment.attachments.length > 1}
-                      fallback={
-                        <Show when={comment.attachments.length === 1}>
-                          <div class="group/image relative max-w-90% w-fit bg-secondary rounded-lg cursor-zoom-in">
-                            <img
-                              class="w-auto max-h-80 object-contain rounded-lg"
-                              src={pb.files.getUrl(comment, comment.attachments[0])}
-                            />
-                            <Show when={app.session().userId === comment.author}>
-                              <Button
-                                variant="destructive"
-                                size="icon"
-                                class="group-hover/image:(size-6) flex size-0 overflow-hidden absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2 z-2"
-                                disabled={app.session().userId !== comment.author}
-                                onClick={() =>
-                                  handleRemoveAttachment(comment.id, comment.author, comment.attachments[0])
-                                }
-                              >
-                                <SimpleTooltip content="Remove attachment">
-                                  <i class="i-lucide-x block pointer-events-none" />
-                                </SimpleTooltip>
-                              </Button>
-                            </Show>
-                          </div>
-                        </Show>
-                      }
-                    >
+                    <Show when={comment.attachments.length > 0}>
                       <div class="w-full flex flex-wrap gap-4">
                         <AttachmentCollage
                           author={comment.author}
