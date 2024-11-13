@@ -91,7 +91,10 @@ export const AttachmentCard: VoidComponent<AttachmentCard> = (props) => {
               size="icon"
               class="group-hover/image:(size-6) flex size-0 overflow-hidden absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2 z-2"
               disabled={app.session().userId !== props.author}
-              onClick={() => props.onRemovePress(props.option.name)}
+              onClick={(e: MouseEvent) => {
+                e.stopPropagation();
+                props.onRemovePress(props.option.name);
+              }}
             >
               <SimpleTooltip content="Remove attachment">
                 <i class="i-lucide-x block pointer-events-none" />
@@ -109,7 +112,10 @@ export const AttachmentCard: VoidComponent<AttachmentCard> = (props) => {
               size="icon"
               class="group-hover/image:(size-6) flex size-0 overflow-hidden absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2 z-2"
               disabled={app.session().userId !== props.author}
-              onClick={() => props.onRemovePress(props.option.name)}
+              onClick={(e: MouseEvent) => {
+                e.stopPropagation();
+                props.onRemovePress(props.option.name);
+              }}
             >
               <SimpleTooltip content="Remove attachment">
                 <i class="i-lucide-x block pointer-events-none" />
