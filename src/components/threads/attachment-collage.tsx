@@ -1,14 +1,19 @@
 import { createAsync } from '@solidjs/router';
-import { For, Index, Show, Suspense, VoidComponent } from 'solid-js';
+import { For, Index, Match, ParentComponent, Show, Suspense, Switch, VoidComponent } from 'solid-js';
 import { useApp } from '../app-context';
 import { Button } from '../ui/Button';
 import { SimpleTooltip } from '../ui/Tooltip';
 
-type AttachmentType = { name: string; url: string };
+type AttachmentOption = { name: string; url: string };
+
+type AttachmentType =
+  | { type: 'text'; text: string; option: AttachmentOption }
+  | { type: 'image'; option: AttachmentOption }
+  | { type: 'video'; option: AttachmentOption };
 
 interface AttachmentCollageProps {
   author: string;
-  attachments: AttachmentType[];
+  attachments: AttachmentOption[];
   onRemovePress: (attachment: string) => void;
 }
 
@@ -16,17 +21,27 @@ export const AttachmentCollage: VoidComponent<AttachmentCollageProps> = (props) 
   const app = useApp();
 
   const resolvedFiles = createAsync(async () => {
-    const resolved: ({ original: AttachmentType; type: string } | { original: AttachmentType; type: null })[] = [];
+    const resolved: AttachmentType[] = [];
 
     for (const attachment of props.attachments) {
       try {
-        const blob = await (await fetch(attachment.url)).blob();
+        const response = await fetch(attachment.url);
+        const contentType = response.headers.get('Content-Type');
 
-        resolved.push({ original: attachment, type: blob.type });
+        if (!contentType) continue;
+
+        if (contentType.includes('image')) {
+          resolved.push({ type: 'image', option: attachment });
+        } else if (contentType.includes('text')) {
+          resolved.push({ type: 'text', text: await response.text(), option: attachment });
+        } else if (contentType.includes('video')) {
+          resolved.push({ type: 'video', option: attachment });
+        }
       } catch {
-        resolved.push({ original: attachment, type: null });
+        continue;
       }
     }
+
     return resolved;
   });
 
@@ -46,30 +61,104 @@ export const AttachmentCollage: VoidComponent<AttachmentCollageProps> = (props) 
             return (
               <Show when={_file()}>
                 {(resolved) => (
-                  <Show when={resolved().type.includes('image')}>
-                    <div class="group/image relative w-fit bg-secondary rounded-lg cursor-zoom-in">
-                      <img class="size-48 object-cover rounded-lg" src={resolved().original.url} />
-                      <Show when={app.session().userId === props.author}>
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          class="group-hover/image:(size-6) flex size-0 overflow-hidden absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2 z-2"
-                          disabled={app.session().userId !== props.author}
-                          onClick={() => props.onRemovePress(resolved().original.name)}
-                        >
-                          <SimpleTooltip content="Remove attachment">
-                            <i class="i-lucide-x block pointer-events-none" />
-                          </SimpleTooltip>
-                        </Button>
-                      </Show>
-                    </div>
-                  </Show>
+                  <Switch>
+                    <Match when={resolved().type === 'image'}>
+                      <ImageCard src={resolved().option.url}>
+                        <Show when={app.session().userId === props.author}>
+                          <Button
+                            variant="destructive"
+                            size="icon"
+                            class="group-hover/image:(size-6) flex size-0 overflow-hidden absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2 z-2"
+                            disabled={app.session().userId !== props.author}
+                            onClick={() => props.onRemovePress(resolved().option.name)}
+                          >
+                            <SimpleTooltip content="Remove attachment">
+                              <i class="i-lucide-x block pointer-events-none" />
+                            </SimpleTooltip>
+                          </Button>
+                        </Show>
+                      </ImageCard>
+                    </Match>
+
+                    <Match when={resolved().type === 'video'}>
+                      <VideoCard src={resolved().option.url}>
+                        <Show when={app.session().userId === props.author}>
+                          <Button
+                            variant="destructive"
+                            size="icon"
+                            class="group-hover/image:(size-6) flex size-0 overflow-hidden absolute top-0 right-0 rounded-full translate-x-1/2 -translate-y-1/2 z-2"
+                            disabled={app.session().userId !== props.author}
+                            onClick={() => props.onRemovePress(resolved().option.name)}
+                          >
+                            <SimpleTooltip content="Remove attachment">
+                              <i class="i-lucide-x block pointer-events-none" />
+                            </SimpleTooltip>
+                          </Button>
+                        </Show>
+                      </VideoCard>
+                    </Match>
+
+                    <Match
+                      when={(() => {
+                        const r = resolved();
+
+                        if (r.type === 'text') {
+                          return r;
+                        }
+                      })()}
+                    >
+                      {(resolvedText) => <TextCard text={resolvedText().text}></TextCard>}
+                    </Match>
+                  </Switch>
                 )}
               </Show>
             );
           }}
         </Index>
       </Suspense>
+    </div>
+  );
+};
+
+interface ImageCardProps {
+  src: string;
+}
+
+const ImageCard: ParentComponent<ImageCardProps> = (props) => {
+  return (
+    <div class="group/image relative w-fit bg-secondary rounded-lg cursor-zoom-in">
+      <img class="size-48 object-cover rounded-lg" src={props.src} />
+      {props.children}
+    </div>
+  );
+};
+
+interface VideoCardProps {
+  src: string;
+}
+
+const VideoCard: ParentComponent<VideoCardProps> = (props) => {
+  return (
+    <div class="group/image relative w-fit bg-secondary rounded-lg cursor-zoom-in">
+      <video class="size-48 object-cover rounded-lg" src={props.src} controls muted />
+      {props.children}
+    </div>
+  );
+};
+
+interface TextCardProps {
+  text: string;
+}
+
+const TextCard: ParentComponent<TextCardProps> = (props) => {
+  return (
+    <div class="group/image relative w-full bg-secondary rounded-lg cursor-zoom-in max-h-48 overflow-auto">
+      <div class="whitespace-pre grid relative">
+        <span class="h-full w-full">{props.text}</span>
+        <div class="col-start-1 col-end-1 block absolute top-0 left-0 w-full h-full bg-black/50"></div>
+      </div>
+
+      {props.children}
     </div>
   );
 };
