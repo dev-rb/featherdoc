@@ -1,6 +1,7 @@
 {
   "name": "support-world",
   "author": "dev-rb",
+  "description": "A platform for finding help for topics and making a knowledge base.",
   "type": "module",
   "scripts": {
     "dev": "vinxi dev",
