@@ -35,9 +35,42 @@ export default function Notebook() {
   };
 
   const handleUpdate = (value: string) => {
-    const id = notebook.data()?.id;
+    const id = notebook.data.latest?.id;
     if (!id) return;
     updateNotebook.mutate(id, { content: value });
+  };
+
+  const handleImageDrop = async (image: File) => {
+    const id = notebook.data.latest?.id;
+    if (!id) return image.name;
+    const formData = new FormData();
+    formData.append('attachments', image);
+    const response = await updateNotebook.mutateAsync(id, formData);
+    await invalidateQuery('notebooks/getFirstListItem');
+
+    const lastAdded = response.attachments[response.attachments.length - 1];
+
+    if (!lastAdded) return image.name;
+
+    return pb.files.getUrl(notebook.data.latest!, lastAdded);
+  };
+
+  const handleImageDelete = async (src: string) => {
+    const id = notebook.data.latest?.id;
+    if (!id) return;
+
+    if (src.startsWith('http')) {
+      const split = src.split('/');
+
+      if (!split.length) return;
+
+      src = split[split.length - 1];
+    }
+
+    if (!notebook.data.latest?.attachments.includes(src)) return;
+
+    await updateNotebook.mutateAsync(id, { 'attachments-': src });
+    await invalidateQuery('notebooks/getFirstListItem');
   };
 
   const debouncedUpdate = debounce((value: string) => {
@@ -84,8 +117,10 @@ export default function Notebook() {
           >
             <RichEditor
               class="w-full h-full focus:outline-none text-white overflow-auto"
-              contents={notebook.data.latest?.content}
+              initialContent={notebook.data.latest?.content}
               onInput={(value) => debouncedUpdate(value)}
+              onDropImage={handleImageDrop}
+              onImageDeleted={handleImageDelete}
             />
           </ErrorBoundary>
         </div>

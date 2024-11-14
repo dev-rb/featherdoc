@@ -8,15 +8,19 @@ import { CustomHorizontalRule } from './horizontal-rule';
 import { makeClickOutside } from '~/lib/primitives';
 import './editor.css';
 import { showToast } from '../Toast';
+import { Fragment } from '@tiptap/pm/model';
 
 type DivProps = JSX.HTMLAttributes<HTMLDivElement>;
 
 interface RichEditorProps extends Omit<DivProps, 'onInput'> {
   onInput?: (text: string) => void;
   contents?: string;
+  initialContent?: string;
   wrapperClass?: string;
   editable?: boolean;
   onClickOutside?: () => void;
+  onDropImage: (image: File) => Promise<string>;
+  onImageDeleted: (imageSrc: string) => Promise<void>;
 }
 export const RichEditor = (props: RichEditorProps) => {
   const [self, other] = splitProps(props, [
@@ -41,8 +45,6 @@ export const RichEditor = (props: RichEditorProps) => {
   };
 
   let editor: Editor | undefined;
-
-  const inputId = () => props.id ?? 'note-input';
 
   makeClickOutside({
     ref: editorRef,
@@ -101,6 +103,9 @@ export const RichEditor = (props: RichEditorProps) => {
             HTMLAttributes: {},
           },
           horizontalRule: false,
+          dropcursor: {
+            class: 'text-muted-foreground',
+          },
         }),
         Placeholder.configure({
           showOnlyWhenEditable: false,
@@ -125,7 +130,7 @@ export const RichEditor = (props: RichEditorProps) => {
         CustomHorizontalRule,
         ImageExtension,
       ],
-      content: props.contents,
+      content: props.initialContent,
       editorProps: {
         attributes: {
           class: self.class ?? '',
@@ -140,10 +145,6 @@ export const RichEditor = (props: RichEditorProps) => {
             const file = event.dataTransfer.files[0];
             const fileSize = Math.trunc(file.size / 1024 / 1024);
 
-            if (!file.type.includes('image')) {
-              return false;
-            }
-
             if (fileSize > 5) {
               showToast({
                 title: `File too large: ${file.name}`,
@@ -153,30 +154,67 @@ export const RichEditor = (props: RichEditorProps) => {
               return true;
             }
 
-            const img = new Image();
-            img.src = URL.createObjectURL(file);
-            img.addEventListener(
-              'load',
-              function () {
-                const { schema } = view.state;
-                const coordinates = view.posAtCoords({ left: event.clientX, top: event.clientY });
-                if (!coordinates) return;
-                const node = schema.nodes.image.create({ src: img.src });
-                const placeholder = schema.nodes.paragraph.create({ innerText: '' });
-                const transaction = view.state.tr.insert(coordinates.pos, [node, placeholder]);
+            if (!file.type.includes('image')) {
+              return false;
+            }
 
-                return view.dispatch(transaction);
-              },
-              { once: true }
-            );
+            props.onDropImage(file).then((src) => {
+              const img = new Image();
+              img.src = src;
+              img.addEventListener(
+                'load',
+                function () {
+                  const { schema } = view.state;
+                  const coordinates = view.posAtCoords({ left: event.clientX, top: event.clientY });
+                  if (!coordinates) return;
+                  const node = schema.nodes.image.create({ src: img.src });
+                  const placeholder = schema.nodes.paragraph.create({ innerText: '' });
+                  const transaction = view.state.tr.insert(coordinates.pos, [node, placeholder]);
+
+                  return view.dispatch(transaction);
+                },
+                { once: true }
+              );
+            });
+
             return true;
           }
 
           return false;
         },
       },
-      onUpdate(props) {
-        this.editable = props.editor.isEditable;
+      async onUpdate({ editor, transaction }) {
+        this.editable = editor.isEditable;
+
+        const getImageSrcs = (fragment: Fragment) => {
+          const srcs = new Set<string>();
+          fragment.forEach((node) => {
+            if (node.type.name === 'image') {
+              srcs.add(node.attrs.src);
+            }
+          });
+          return srcs;
+        };
+
+        let currentSrcs = getImageSrcs(transaction.doc.content);
+        let previousSrcs = getImageSrcs(transaction.before.content);
+
+        if (currentSrcs.size === 0 && previousSrcs.size === 0) {
+          save();
+          return;
+        }
+
+        let deletedImageSrcs = [...previousSrcs].filter((src) => !currentSrcs.has(src));
+
+        if (deletedImageSrcs.length > 0) {
+          let promises = [];
+
+          for (const src of deletedImageSrcs) {
+            promises.push(props.onImageDeleted(src));
+          }
+
+          await Promise.all(promises);
+        }
         save();
       },
     });
@@ -198,5 +236,5 @@ export const RichEditor = (props: RichEditorProps) => {
     setWrapperRef(el);
   };
 
-  return <div ref={setRef} id={inputId()} class={self.wrapperClass ?? 'h-full w-full flex-1 flex my-2'} {...other} />;
+  return <div ref={setRef} class={self.wrapperClass ?? 'h-full w-full flex-1 flex my-2'} {...other} />;
 };
