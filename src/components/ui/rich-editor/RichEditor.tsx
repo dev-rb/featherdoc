@@ -106,6 +106,12 @@ export const RichEditor = (props: RichEditorProps) => {
           dropcursor: {
             class: 'text-muted-foreground',
           },
+          codeBlock: {
+            HTMLAttributes: {
+              class: 'p-4 bg-primary/4 rounded-lg',
+            },
+            exitOnTripleEnter: false,
+          },
         }),
         Placeholder.configure({
           showOnlyWhenEditable: false,
