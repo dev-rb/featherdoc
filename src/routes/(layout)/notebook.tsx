@@ -103,7 +103,7 @@ export default function Notebook() {
               return (
                 <div class="flex flex-col gap-4 w-full h-full items-center justify-center text-white text-xl">
                   <span class="font-bold">ಥ_ಥ</span>
-                  <Show when={isNotFoundError()} fallback={'Failed to load custom'}>
+                  <Show when={isNotFoundError()} fallback={'Failed to load notebook'}>
                     Notebook not found
                   </Show>
 
