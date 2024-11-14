@@ -1,6 +1,7 @@
-import { Accessor, createContext, FlowComponent, useContext } from 'solid-js';
+import { Accessor, createContext, createRenderEffect, FlowComponent, onMount, useContext } from 'solid-js';
 import { cacheSession, usePocketbase } from './pocketbase-context';
 import { createAsync } from '@solidjs/router';
+import { initializeShikiHighlighter } from '~/lib/shiki';
 
 interface AppContextValues {
   session: Accessor<{ token: string | undefined; userId: string | undefined }>;
@@ -25,6 +26,10 @@ export const AppContextProvider: FlowComponent = (props) => {
   const authed = () => {
     return Boolean(sessionData.latest && pb.authStore.token && pb.authStore.isValid);
   };
+
+  createRenderEffect(async () => {
+    await initializeShikiHighlighter();
+  });
 
   return (
     <AppContext.Provider

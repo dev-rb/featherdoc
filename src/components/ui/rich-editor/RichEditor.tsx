@@ -9,6 +9,7 @@ import { makeClickOutside } from '~/lib/primitives';
 import './editor.css';
 import { showToast } from '../Toast';
 import { Fragment } from '@tiptap/pm/model';
+import { CodeBlockShiki } from './code-block';
 
 type DivProps = JSX.HTMLAttributes<HTMLDivElement>;
 
@@ -106,12 +107,14 @@ export const RichEditor = (props: RichEditorProps) => {
           dropcursor: {
             class: 'text-muted-foreground',
           },
-          codeBlock: {
-            HTMLAttributes: {
-              class: 'p-4 bg-primary/4 rounded-lg',
-            },
-            exitOnTripleEnter: false,
+          codeBlock: false,
+        }),
+        CodeBlockShiki.configure({
+          HTMLAttributes: {
+            class: 'p-4 bg-primary/4 rounded-lg',
+            spellcheck: false,
           },
+          exitOnTripleEnter: false,
         }),
         Placeholder.configure({
           showOnlyWhenEditable: false,
