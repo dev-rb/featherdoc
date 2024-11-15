@@ -14,7 +14,7 @@ export const AuthModal = () => {
   const isOnline = createOnlineStatus();
 
   return (
-    <Dialog open={!app.authed() && isOnline()}>
+    <Dialog open={!app.authed() && isOnline()} modal={true}>
       <DialogContent>
         <Stepper step={step()} onStepChange={setStep}>
           <StepperItem>
@@ -29,6 +29,7 @@ export const AuthModal = () => {
                     variant="outline"
                     onClick={() => {
                       setStep(1);
+                      document.getElementById('email-input')?.focus();
                     }}
                   >
                     Sign up
@@ -48,6 +49,7 @@ export const AuthModal = () => {
               size="icon"
               onClick={() => {
                 setStep(0);
+                document.getElementById('email-input')?.focus();
               }}
             >
               <i class="i-lucide-arrow-left inline-block text-xl text-white" />

@@ -68,7 +68,7 @@ export const LoginForm: Component<LoginFormProps> = (props) => {
 
   return (
     <form use:form class="grid grid-cols-1 grid-rows-2 gap-8 py-4 px-8">
-      <TextField required validationState={errors('email')?.length ? 'invalid' : 'valid'}>
+      <TextField id="email" required validationState={errors('email')?.length ? 'invalid' : 'valid'}>
         <TextFieldLabel class="flex flex-col gap-2 text-foreground">
           Email
           <TextFieldInput type="email" name="email" />
