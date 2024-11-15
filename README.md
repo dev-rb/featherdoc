@@ -9,8 +9,14 @@ A support platform meant for devs to ask questions and collaborate to solve prob
 - Kobalte
 - Solid-UI for the base components
 - Tiptap - Rich editor
+- Unocss - Styling
+- Shiki - Code highlighting
+- Valibot
+- Felte - Forms
+- Iconify/Lucide - Icons
 
-## Planned Features
+## Planned Features (coming soon)
+Ran out of time to do these / do these correctly. But they will be added in a future release.
 
 - Better Local-First Notebook
 - Drawing Scratchpad
