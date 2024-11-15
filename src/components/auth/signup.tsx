@@ -11,6 +11,11 @@ import { API_URL } from '~/lib/constants';
 
 const SignupSchema = v.pipe(
   v.object({
+    username: v.pipe(
+      v.string('Username is required'),
+      v.minLength(5, 'Username must be at least 5 characters long'),
+      v.maxLength(15, 'Username can not be longer than 15 characters')
+    ),
     email: v.pipe(v.string('Email is required'), v.email('Enter a valid email')),
     password: v.pipe(v.string('Password is required'), v.minLength(8, 'Password must be at least 8 characters long.')),
     confirmPassword: v.string(),
@@ -44,6 +49,7 @@ const signup = async (data: SignupData) => {
   const pb = new Pocketbase(API_URL) as TypedPocketBase;
   try {
     await pb.collection('users').create({
+      username: data.username,
       email: data.email,
       password: data.password,
       passwordConfirm: data.confirmPassword,
@@ -68,8 +74,9 @@ interface SignupFormProps {
 }
 
 export const SignupForm: Component<SignupFormProps> = (props) => {
-  const { form, errors, setErrors, touched, isSubmitting } = createForm({
+  const { form, errors, setErrors, touched, isSubmitting } = createForm<SignupData>({
     initialValues: {
+      username: '',
       email: '',
       password: '',
       confirmPassword: '',
@@ -98,6 +105,17 @@ export const SignupForm: Component<SignupFormProps> = (props) => {
 
   return (
     <form use:form class="grid grid-cols-1 grid-rows-2 gap-8 py-4 px-8">
+      <TextField
+        id="username"
+        required
+        validationState={touched('username') && errors('username')?.length ? 'invalid' : 'valid'}
+      >
+        <TextFieldLabel class="flex flex-col gap-2 text-foreground">
+          Username
+          <TextFieldInput type="text" name="username" />
+          <TextFieldErrorMessage>{errors('username')?.join(' ')}</TextFieldErrorMessage>
+        </TextFieldLabel>
+      </TextField>
       <TextField
         id="email"
         required

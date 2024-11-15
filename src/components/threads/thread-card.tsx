@@ -34,7 +34,7 @@ export const ThreadCard: VoidComponent<ThreadCardProps> = (props) => {
         <CardHeader class="pb-2">
           <div class="w-full flex items-center justify-between">
             <span class="text-xs text-white px-2 py-1 bg-blue-600/50 rounded-full">
-              {props.author.name || props.author.username}
+              {props.author.username || 'Unknown'}
             </span>
             <span class={cn('text-xs text-foreground/50', isActive() && 'text-primary/50')}>
               {dayjs(props.timestamp).fromNow()}

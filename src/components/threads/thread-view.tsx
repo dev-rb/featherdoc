@@ -47,7 +47,7 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
 
   createScrollBottom(containerRef);
 
-  const comments = createRealtimeResource(
+  const comments = createRealtimeResource<'comments', 'getList', { author: UsersResponse }>(
     'comments',
     'getList',
     (s) =>
@@ -270,7 +270,7 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
                 <div class="bg-blue-600/50 w-10 h-10 aspect-square rounded-full"></div>
                 <div class="w-full flex flex-col gap-2">
                   <div class="flex items-center gap-2">
-                    <span class="text-foreground/70 text-xs">{comment.author}</span>
+                    <span class="text-foreground/70 text-xs">{comment.expand?.author.username || 'Unknown'}</span>
                     <span class="text-xs text-foreground/50">{dayjs(comment.created).fromNow()}</span>
                   </div>
 
