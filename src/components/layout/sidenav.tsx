@@ -17,11 +17,18 @@ export const SideNav: VoidComponent<SideNavProps> = (props) => {
         props.open && 'max-md:translate-x-0'
       )}
     >
-      <div class="flex items-center w-full max-sm:pl-4">
-        <Button variant="secondary" size="icon" class="rounded-full lg:hidden" onClick={props.onClose}>
+      <div class="relative flex items-center w-full bg-[#0B0F0B]">
+        <Button
+          variant="secondary"
+          size="icon"
+          class="absolute left-4 top-1/2 -translate-y-1/2 rounded-full lg:hidden"
+          onClick={props.onClose}
+        >
           <i class="i-lucide-x inline-block" />
         </Button>
-        <div class="py-8 px-8 lg:(w-full px-0) ml-auto bg-primary/20" />
+        <div class="py-6 px-0 w-full flex-center lg:(w-auto aspect-square px-6) bg-[#0B0F0B]">
+          <img src="/favicon.ico" />
+        </div>
       </div>
       <Navigation />
     </aside>
@@ -72,9 +79,9 @@ const Navigation = () => {
           {/* <li class="w-full"> */}
           {/*   <ThemeToggle /> */}
           {/* </li> */}
-          <li class="w-full">
-            <NavLink href="/settings" iconClass="i-lucide-settings" label="Settings" />
-          </li>
+          {/* <li class="w-full"> */}
+          {/*   <NavLink href="/settings" iconClass="i-lucide-settings" label="Settings" /> */}
+          {/* </li> */}
         </ul>
       </ul>
     </nav>
