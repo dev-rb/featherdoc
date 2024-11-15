@@ -23,7 +23,7 @@ export default function App() {
     <Router
       root={(props) => (
         <MetaProvider>
-          <Title>Support World</Title>
+          <Title>Feather Doc</Title>
           <Toaster />
           <PocketbaseProvider>
             <AppContextProvider>

@@ -79,7 +79,7 @@ export default function Notebook() {
 
   return (
     <>
-      <Title>Notebook | Support World</Title>
+      <Title>Notebook | Feather Doc</Title>
       <div class="w-full h-full grid grid-rows-1 lg:grid-cols-[1fr_2fr_1fr] lg:p-4">
         <div class="relative col-start-1 lg:col-start-2 w-full h-full bg-muted lg:rounded-lg p-4">
           <div

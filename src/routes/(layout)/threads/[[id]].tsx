@@ -48,7 +48,7 @@ export default function Threads() {
 
   return (
     <>
-      <Title>Threads | Support World</Title>
+      <Title>Threads | Feather Doc</Title>
       <main class="w-full h-full grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] overflow-hidden">
         <aside class="flex flex-col bg-muted w-full lg:(min-w-md max-w-md) overflow-hidden lg:pt-4 border-r-1 border-r-secondary">
           <div class="w-full p-2 flex flex-col gap-2">
