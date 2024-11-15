@@ -5,7 +5,6 @@ import { validator } from '~/lib/felte';
 import { children, Component, JSX } from 'solid-js';
 import { TypedPocketBase } from '~/types/pocketbase-gen';
 import Pocketbase from 'pocketbase';
-import { createAppSession } from '~/lib/session';
 import { getRequestEvent } from 'solid-js/web';
 import { revalidate } from '@solidjs/router';
 import { API_URL } from '~/lib/constants';
@@ -47,7 +46,6 @@ export const LoginForm: Component<LoginFormProps> = (props) => {
     },
     extend: validator({ schema: LoginSchema }),
     onError(e) {
-      console.log('Fail', e);
       setErrors('email', 'Email or password was incorrect');
       setErrors('password', 'Email or password was incorrect');
     },
