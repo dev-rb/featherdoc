@@ -15,6 +15,7 @@ import { useNavigate } from '@solidjs/router';
 import { ACCEPTED_FILE_TYPES } from '~/lib/constants';
 import { SimpleTooltip } from '../ui/Tooltip';
 import { AttachmentCollage } from './attachment-collage';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/DropdownMenu';
 
 const CreateCommentSchema = v.object({
   content: v.pipe(v.string(), v.minLength(1)),
@@ -289,17 +290,34 @@ export const ThreadView: VoidComponent<ThreadViewProps> = (props) => {
                 </div>
 
                 <Show when={app.session().userId === comment.author}>
-                  <Button
-                    class="absolute right-4 top-4 ml-auto size-8 group-hover:flex hidden"
-                    size="icon"
-                    variant="secondary"
-                    onClick={() => handleDeleteComment(comment.id, comment.author)}
-                    loading={deleteComment.isPending}
-                  >
-                    <SimpleTooltip content="More actions">
-                      <i class="i-lucide-ellipsis-vertical block" />
-                    </SimpleTooltip>
-                  </Button>
+                  <DropdownMenu modal={true}>
+                    <DropdownMenuTrigger
+                      as={Button}
+                      class="absolute right-4 top-4 ml-auto size-8 ui-expanded:flex group-hover:flex hidden"
+                      size="icon"
+                      variant="secondary"
+                      loading={deleteComment.isPending}
+                    >
+                      <SimpleTooltip content="More actions">
+                        <i class="i-lucide-ellipsis-vertical block" />
+                      </SimpleTooltip>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent class="w-48">
+                      <DropdownMenuItem
+                        class="cursor-pointer"
+                        onSelect={() => {
+                          handleDeleteComment(comment.id, comment.author);
+                        }}
+                      >
+                        <span>Delete Comment</span>
+                      </DropdownMenuItem>
+                      <SimpleTooltip content="Coming soon">
+                        <DropdownMenuItem disabled>
+                          <span>Edit Comment</span>
+                        </DropdownMenuItem>
+                      </SimpleTooltip>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </Show>
               </div>
             )}
