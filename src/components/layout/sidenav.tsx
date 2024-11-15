@@ -1,9 +1,10 @@
-import { A, reload, useNavigate } from '@solidjs/router';
+import { A, reload, revalidate, useNavigate } from '@solidjs/router';
 import { VoidComponent } from 'solid-js';
 import { Button } from '../ui/Button';
 import { cn } from '~/lib/utils';
 import { usePocketbase } from '../pocketbase-context';
 import { getRequestEvent } from 'solid-js/web';
+import { SimpleTooltip } from '../ui/Tooltip';
 
 interface SideNavProps {
   open: boolean;
@@ -57,16 +58,19 @@ const Logout = () => {
   const handleLogout = () => {
     pb.authStore.clear();
     clearCookies();
+    revalidate('session', true);
     navigate('/', { replace: true });
   };
   return (
-    <Button
-      class="w-full rounded-none py-8 border-y border-y-secondary max-lg:(flex justify-start items-center gap-4 px-8 text-lg) hover:(bg-primary text-primary-foreground) text-secondary-foreground/40"
-      variant="ghost"
-      onClick={handleLogout}
-    >
-      <i class="i-lucide-log-out inline-block text-2xl" />
-    </Button>
+    <SimpleTooltip content="Logout" class="w-full">
+      <Button
+        class="w-full rounded-none py-8 border-y border-y-secondary max-lg:(flex justify-start items-center gap-4 px-8 text-lg) hover:(bg-primary text-primary-foreground) text-secondary-foreground/40"
+        variant="ghost"
+        onClick={handleLogout}
+      >
+        <i class="i-lucide-log-out inline-block text-2xl" />
+      </Button>
+    </SimpleTooltip>
   );
 };
 

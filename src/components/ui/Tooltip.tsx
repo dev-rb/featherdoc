@@ -31,10 +31,10 @@ const TooltipContent = <T extends ValidComponent = 'div'>(props: PolymorphicProp
   );
 };
 
-const SimpleTooltip: ParentComponent<{ content: string | JSX.Element }> = (props) => {
+const SimpleTooltip: ParentComponent<{ content: string | JSX.Element; class?: string }> = (props) => {
   return (
     <Tooltip>
-      <TooltipTrigger class="inline-block" as="div">
+      <TooltipTrigger class={cn('inline-block', props.class)} as="div">
         {props.children}
       </TooltipTrigger>
       <TooltipContent>{props.content}</TooltipContent>
