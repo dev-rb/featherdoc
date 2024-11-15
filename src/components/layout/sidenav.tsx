@@ -1,8 +1,11 @@
-import { A } from '@solidjs/router';
+import { A, revalidate } from '@solidjs/router';
 import { VoidComponent } from 'solid-js';
 import { Button } from '../ui/Button';
 import { ThemeToggle } from './theme-toggle';
 import { cn } from '~/lib/utils';
+import { usePocketbase } from '../pocketbase-context';
+import { getRequestEvent } from 'solid-js/web';
+import { clearResponseHeaders } from 'vinxi/http';
 
 interface SideNavProps {
   open: boolean;
@@ -32,6 +35,20 @@ export const SideNav: VoidComponent<SideNavProps> = (props) => {
       </div>
       <Navigation />
     </aside>
+  );
+};
+
+const Logout = () => {
+  const pb = usePocketbase();
+  const handleLogout = () => {};
+  return (
+    <Button
+      class="w-full rounded-none py-8 border-y border-y-secondary max-lg:(flex justify-start items-center gap-4 px-8 text-lg) hover:(bg-primary text-primary-foreground) text-secondary-foreground/40"
+      variant="ghost"
+      onClick={handleLogout}
+    >
+      <i class="i-lucide-log-out inline-block text-2xl" />
+    </Button>
   );
 };
 
@@ -76,9 +93,9 @@ const Navigation = () => {
           <NavLink href="/threads" iconClass="i-lucide-message-square" label="Threads" end={false} />
         </li>
         <ul class="w-full mt-auto flex flex-col">
-          {/* <li class="w-full"> */}
-          {/*   <ThemeToggle /> */}
-          {/* </li> */}
+          <li class="w-full">
+            <Logout />
+          </li>
           {/* <li class="w-full"> */}
           {/*   <NavLink href="/settings" iconClass="i-lucide-settings" label="Settings" /> */}
           {/* </li> */}
