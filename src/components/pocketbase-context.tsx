@@ -28,10 +28,8 @@ export const cacheSession = query(async () => {
   const event = getRequestEvent();
   const cookie = event?.request.headers.get('cookie');
 
-  if (event) {
-    event.locals.pb = new Pocketbase(API_URL);
-  }
-  event?.locals.pb?.authStore.loadFromCookie(cookie || '');
+  const pb = event?.locals.pb || new Pocketbase(API_URL);
+  pb?.authStore.loadFromCookie(cookie || '');
 
   if (!cookie) return;
 

@@ -18,13 +18,12 @@ type LoginData = v.InferInput<typeof LoginSchema>;
 
 const login = async (data: LoginData) => {
   'use server';
-  const pb = new Pocketbase(API_URL) as TypedPocketBase;
+  const event = getRequestEvent();
+  const pb = event?.locals.pb || (new Pocketbase(API_URL) as TypedPocketBase);
   try {
     await pb.collection('users').authWithPassword(data.email, data.password);
     await pb.collection('users').authRefresh();
-    const event = getRequestEvent();
     if (event) {
-      event.locals.pb = pb;
       const cookie = pb.authStore.exportToCookie();
 
       event.response.headers.set('Set-Cookie', cookie);

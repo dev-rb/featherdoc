@@ -1,11 +1,9 @@
-import { A, revalidate } from '@solidjs/router';
+import { A, reload, useNavigate } from '@solidjs/router';
 import { VoidComponent } from 'solid-js';
 import { Button } from '../ui/Button';
-import { ThemeToggle } from './theme-toggle';
 import { cn } from '~/lib/utils';
 import { usePocketbase } from '../pocketbase-context';
 import { getRequestEvent } from 'solid-js/web';
-import { clearResponseHeaders } from 'vinxi/http';
 
 interface SideNavProps {
   open: boolean;
@@ -38,9 +36,29 @@ export const SideNav: VoidComponent<SideNavProps> = (props) => {
   );
 };
 
+const clearCookies = () => {
+  'use server';
+
+  const event = getRequestEvent();
+
+  if (event) {
+    event.locals.pb?.authStore.clear();
+    const cookie = event.locals.pb.authStore.exportToCookie();
+    event.response.headers.set('Set-Cookie', cookie);
+    event.response.headers.set('Location', '/');
+
+    return reload({ revalidate: 'session' });
+  }
+};
+
 const Logout = () => {
   const pb = usePocketbase();
-  const handleLogout = () => {};
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    pb.authStore.clear();
+    clearCookies();
+    navigate('/', { replace: true });
+  };
   return (
     <Button
       class="w-full rounded-none py-8 border-y border-y-secondary max-lg:(flex justify-start items-center gap-4 px-8 text-lg) hover:(bg-primary text-primary-foreground) text-secondary-foreground/40"

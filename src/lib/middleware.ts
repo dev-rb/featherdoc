@@ -5,13 +5,27 @@ import { API_URL } from './constants';
 
 const doStuff: RequestMiddleware = async (event) => {
   const url = new URL(event.request.url);
-  if (url.pathname === '/_server' || url.pathname === '/service_worker.js') return;
 
-  const pb = new Pocketbase(API_URL);
-  event.locals.pb = pb;
+  let pb;
+  if (event.locals.pb) {
+    pb = event.locals.pb;
+  } else {
+    pb = new Pocketbase(API_URL);
+    event.locals.pb = pb;
+  }
+
+  if (
+    url.pathname.includes('/_server') ||
+    url.pathname === '/service_worker.js' ||
+    url.pathname === '/site.webmanifest'
+  )
+    return;
+
+  const cookie = event.request.headers.get('cookie');
+  if (!cookie) return;
 
   // load the store data from the request cookie string
-  event.locals.pb.authStore.loadFromCookie(event.request.headers.get('cookie') || '');
+  event.locals.pb.authStore.loadFromCookie(cookie || '');
 
   if (!event.locals.pb.authStore.isValid) {
     if (url.pathname !== '/') {
